@@ -63,19 +63,29 @@ export function analyzeHeadersAndCookies(input: HeaderAnalysisInput): Finding[] 
       fixPrompt: `Add a robust Content-Security-Policy header to my Next.js (next.config.js) configuration.
 The policy should allow self-hosted scripts, styles, and images, permit Google Fonts, and restrict iframe framing to self.`
     });
-  } else if (csp.includes("'unsafe-inline'") && !csp.includes('nonce-') && !csp.includes('sha256-')) {
-    findings.push({
-      id: 'HDR-WEAK-CSP-UNSAFE-INLINE',
-      category: 'headers',
-      severity: 'low',
-      deduction: 5,
-      title: 'Weak Content-Security-Policy (unsafe-inline without nonce)',
-      owaspMapping: 'OWASP A05:2021 - Security Misconfiguration',
-      impact: "Using 'unsafe-inline' without cryptographic nonces or hashes allows inline script injection, reducing CSP defense effectiveness against XSS.",
-      remediationSummary: 'Migrate to strict nonce-based CSP or remove unsafe-inline from script-src directives.',
-      maskedEvidence: csp.slice(0, 80) + '...',
-      fixPrompt: `My CSP uses 'unsafe-inline'. Show me how to configure a nonce-based Content-Security-Policy in Next.js App Router middleware to eliminate 'unsafe-inline'.`
-    });
+  } else {
+    // Specifically inspect script execution directives (script-src or default-src)
+    const scriptDirectiveMatch = csp.match(/(?:script-src|default-src)\s+([^;]+)/i);
+    const scriptDirective = scriptDirectiveMatch ? scriptDirectiveMatch[1] : csp;
+
+    if (
+      scriptDirective.includes("'unsafe-inline'") &&
+      !csp.includes('nonce-') &&
+      !csp.includes('sha256-')
+    ) {
+      findings.push({
+        id: 'HDR-WEAK-CSP-UNSAFE-INLINE',
+        category: 'headers',
+        severity: 'low',
+        deduction: 5,
+        title: 'Weak Content-Security-Policy (unsafe-inline in script-src)',
+        owaspMapping: 'OWASP A05:2021 - Security Misconfiguration',
+        impact: "Using 'unsafe-inline' in script-src without cryptographic nonces or hashes allows inline script injection, reducing CSP defense effectiveness against XSS.",
+        remediationSummary: 'Migrate to strict nonce-based CSP or remove unsafe-inline from script-src directives.',
+        maskedEvidence: csp.slice(0, 80) + '...',
+        fixPrompt: `My CSP uses 'unsafe-inline' in script-src. Show me how to configure a nonce-based Content-Security-Policy in Next.js App Router middleware to eliminate 'unsafe-inline'.`
+      });
+    }
   }
 
   // 2. Strict-Transport-Security (HSTS) - Only for HTTPS
