@@ -1,31 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
   <defs>
-    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981" />
-      <stop offset="50%" stop-color="#06B6D4" />
-      <stop offset="100%" stop-color="#6366F1" />
+    <linearGradient id="facetWhiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#71717A" />
     </linearGradient>
-    <linearGradient id="coreGlow" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#06B6D4" />
-      <stop offset="100%" stop-color="#10B981" />
+    <linearGradient id="facetDarkGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#3F3F46" />
+      <stop offset="100%" stop-color="#A1A1AA" />
     </linearGradient>
   </defs>
-  <path
-    d="M24 4L8 10V22C8 32.5 14.8 41.8 24 44C33.2 41.8 40 32.5 40 22V10L24 4Z"
-    stroke="url(#shieldGrad)"
-    stroke-width="2.5"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    fill="#020617"
-    fill-opacity="0.95"
-  />
-  <path d="M24 12L32 24L24 21L16 24L24 12Z" fill="url(#coreGlow)" />
-  <path
-    d="M24 25L30 33C28 36 26 37 24 38C22 37 20 36 18 33L24 25Z"
-    fill="url(#shieldGrad)"
-    fill-opacity="0.4"
-    stroke="url(#shieldGrad)"
-    stroke-width="1.5"
-  />
-  <circle cx="24" cy="23" r="2.5" fill="#FFFFFF" />
+  <rect width="40" height="40" rx="10" fill="#090A0E" />
+  <rect x="0.5" y="0.5" width="39" height="39" rx="9.5" stroke="#FFFFFF" stroke-opacity="0.25" />
+  <path d="M20 5L8 14L20 20L20 5Z" fill="url(#facetWhiteGrad)" />
+  <path d="M20 5L32 14L20 20L20 5Z" fill="#FFFFFF" fill-opacity="0.85" />
+  <path d="M8 14L20 35L20 20L8 14Z" fill="url(#facetDarkGrad)" />
+  <path d="M32 14L20 35L20 20L32 14Z" fill="#A1A1AA" fill-opacity="0.9" />
+  <line x1="20" y1="5" x2="20" y2="35" stroke="#090A0E" stroke-width="1.2" />
 </svg>

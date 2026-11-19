@@ -16,56 +16,62 @@ export default function Logo({ size = 'md', showText = true, className = '' }: L
 
   return (
     <div className={`flex items-center space-x-3 group ${className}`}>
-      {/* Precision Metallic Shield Icon */}
-      <div className={`relative ${dimensions.box} rounded-xl bg-gradient-to-b from-white/[0.12] to-white/[0.02] p-[1px] border border-white/20 shadow-md shadow-black/80 group-hover:border-white/40 transition-all`}>
-        <div className="w-full h-full bg-[#050608] rounded-[11px] flex items-center justify-center overflow-hidden">
-          <svg
-            viewBox="0 0 48 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className="w-full h-full transform group-hover:scale-105 transition-transform duration-300"
-          >
-            <defs>
-              <linearGradient id="monoShieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#FFFFFF" />
-                <stop offset="60%" stopColor="#A1A1AA" />
-                <stop offset="100%" stopColor="#52525B" />
-              </linearGradient>
-              <linearGradient id="coreLight" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#FFFFFF" />
-                <stop offset="100%" stopColor="#71717A" />
-              </linearGradient>
-            </defs>
+      {/* Direction 3 Custom Geometric Vault-Shield Tile */}
+      <div className={`relative ${dimensions.box} rounded-xl bg-[#090A0E] p-[1px] border border-white/20 shadow-md shadow-black/90 group-hover:border-white/40 transition-all`}>
+        <svg
+          viewBox="0 0 40 40"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full p-1.5 transform group-hover:scale-105 transition-transform duration-300"
+        >
+          <defs>
+            <linearGradient id="facetWhiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#71717A" />
+            </linearGradient>
+            <linearGradient id="facetDarkGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#3F3F46" />
+              <stop offset="100%" stopColor="#A1A1AA" />
+            </linearGradient>
+          </defs>
 
-            {/* Outer Shield Contour */}
-            <path
-              d="M24 5L9 11V23C9 33.2 15.5 42.2 24 44.5C32.5 42.2 39 33.2 39 23V11L24 5Z"
-              stroke="url(#monoShieldGrad)"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              fill="#0A0B0E"
-            />
+          {/* Faceted Geometric Vault-Shield (100% Original Vector) */}
+          {/* Top North-West Facet */}
+          <path
+            d="M20 5L8 14L20 20L20 5Z"
+            fill="url(#facetWhiteGrad)"
+          />
 
-            {/* Supersonic Monolith Ship Core */}
-            <path
-              d="M24 13L31 25L24 22L17 25L24 13Z"
-              fill="url(#coreLight)"
-            />
+          {/* Top North-East Facet */}
+          <path
+            d="M20 5L32 14L20 20L20 5Z"
+            fill="#FFFFFF"
+            fillOpacity="0.85"
+          />
 
-            {/* Lower Armor Chevron */}
-            <path
-              d="M24 26L29 33.5C27 36.5 25.5 37.5 24 38.5C22.5 37.5 21 36.5 19 33.5L24 26Z"
-              fill="white"
-              fillOpacity="0.1"
-              stroke="url(#monoShieldGrad)"
-              strokeWidth="1.2"
-            />
+          {/* Lower South-West Armor Wing */}
+          <path
+            d="M8 14L20 35L20 20L8 14Z"
+            fill="url(#facetDarkGrad)"
+          />
 
-            {/* Radiant Core Dot */}
-            <circle cx="24" cy="24" r="2" fill="#FFFFFF" />
-          </svg>
-        </div>
+          {/* Lower South-East Armor Wing */}
+          <path
+            d="M32 14L20 35L20 20L32 14Z"
+            fill="#A1A1AA"
+            fillOpacity="0.9"
+          />
+
+          {/* Precision Center Dividing Laser Line */}
+          <line
+            x1="20"
+            y1="5"
+            x2="20"
+            y2="35"
+            stroke="#090A0E"
+            strokeWidth="1.2"
+          />
+        </svg>
       </div>
 
       {/* Brand Wordmark */}
