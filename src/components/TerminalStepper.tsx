@@ -32,40 +32,40 @@ export default function TerminalStepper({ targetUrl }: TerminalStepperProps) {
 
   return (
     <div className="w-full max-w-3xl mx-auto my-8">
-      <div className="rounded-2xl border border-white/10 bg-slate-950/80 backdrop-blur-2xl shadow-2xl overflow-hidden">
+      <div className="rounded-2xl border border-white/10 bg-[#090A0D]/90 backdrop-blur-2xl shadow-2xl overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
         {/* Terminal Title Bar */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.08] bg-white/[0.02]">
           <div className="flex items-center space-x-2">
-            <div className="h-3 w-3 rounded-full bg-red-500/80"></div>
-            <div className="h-3 w-3 rounded-full bg-yellow-500/80"></div>
-            <div className="h-3 w-3 rounded-full bg-emerald-500/80"></div>
-            <span className="text-xs font-mono text-slate-500 ml-2">shipsafe-agent --audit</span>
+            <div className="h-2.5 w-2.5 rounded-full bg-neutral-600"></div>
+            <div className="h-2.5 w-2.5 rounded-full bg-neutral-600"></div>
+            <div className="h-2.5 w-2.5 rounded-full bg-neutral-600"></div>
+            <span className="text-xs font-mono text-neutral-400 ml-2">shipsafe --passive-audit</span>
           </div>
-          <div className="flex items-center space-x-1.5 text-[11px] font-mono text-slate-400">
-            <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+          <div className="flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span>
             <span>Target: {targetUrl}</span>
           </div>
         </div>
 
         {/* Terminal Logs Body */}
-        <div className="p-6 font-mono text-xs space-y-3 min-h-[260px]">
+        <div className="p-6 font-mono text-xs space-y-3 min-h-[250px]">
           {STEPS.slice(0, currentStepIndex + 1).map((step, idx) => {
             const isCompleted = idx < currentStepIndex;
             const isCurrent = idx === currentStepIndex;
 
             return (
               <div key={step.id} className="flex items-start space-x-3 transition-opacity duration-300">
-                <span className="text-slate-600 select-none">
-                  [00:0{idx + 1}]
+                <span className="text-neutral-600 select-none">
+                  0{idx + 1}.
                 </span>
 
                 {isCompleted ? (
                   <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
                 ) : isCurrent ? (
-                  <Loader2 className="h-4 w-4 text-cyan-400 animate-spin shrink-0 mt-0.5" />
+                  <Loader2 className="h-4 w-4 text-white animate-spin shrink-0 mt-0.5" />
                 ) : null}
 
-                <span className={isCompleted ? 'text-slate-300' : 'text-cyan-300 font-medium'}>
+                <span className={isCompleted ? 'text-neutral-400' : 'text-white font-medium'}>
                   {step.text}
                 </span>
               </div>
@@ -73,10 +73,10 @@ export default function TerminalStepper({ targetUrl }: TerminalStepperProps) {
           })}
         </div>
 
-        {/* Progress Bar */}
-        <div className="h-1 w-full bg-slate-900 overflow-hidden">
+        {/* Monolith Minimal Progress Bar */}
+        <div className="h-[2px] w-full bg-neutral-900 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-emerald-500 via-cyan-500 to-indigo-500 transition-all duration-300 shadow-[0_0_12px_rgba(6,182,212,0.8)]"
+            className="h-full bg-white transition-all duration-300"
             style={{ width: `${Math.round(((currentStepIndex + 1) / STEPS.length) * 100)}%` }}
           ></div>
         </div>

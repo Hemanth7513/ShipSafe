@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Finding, FindingSeverity } from '@/lib/types/scanner';
+import { Finding, FindingSeverity } from '@/lib/types/scan';
 import { AlertCircle, AlertTriangle, Info, Check, Copy, ChevronDown, ChevronUp, Bot } from 'lucide-react';
 
 interface FindingCardProps {
@@ -14,40 +14,40 @@ function getSeverityBadge(severity: FindingSeverity) {
     case 'critical':
       return {
         text: 'text-red-400',
-        bg: 'bg-red-500/10',
-        border: 'border-red-500/25',
+        bg: 'bg-red-500/[0.08]',
+        border: 'border-red-500/30',
         label: 'CRITICAL',
         icon: AlertCircle
       };
     case 'high':
       return {
         text: 'text-orange-400',
-        bg: 'bg-orange-500/10',
-        border: 'border-orange-500/25',
+        bg: 'bg-orange-500/[0.08]',
+        border: 'border-orange-500/30',
         label: 'HIGH',
         icon: AlertTriangle
       };
     case 'medium':
       return {
         text: 'text-amber-400',
-        bg: 'bg-amber-500/10',
-        border: 'border-amber-500/25',
+        bg: 'bg-amber-500/[0.08]',
+        border: 'border-amber-500/30',
         label: 'MEDIUM',
         icon: AlertTriangle
       };
     case 'low':
       return {
-        text: 'text-cyan-400',
-        bg: 'bg-cyan-500/10',
-        border: 'border-cyan-500/25',
+        text: 'text-neutral-300',
+        bg: 'bg-white/[0.05]',
+        border: 'border-white/15',
         label: 'LOW',
         icon: Info
       };
     case 'info':
       return {
-        text: 'text-slate-400',
-        bg: 'bg-slate-500/10',
-        border: 'border-slate-500/25',
+        text: 'text-neutral-400',
+        bg: 'bg-white/[0.03]',
+        border: 'border-white/10',
         label: 'INFO',
         icon: Info
       };
@@ -68,7 +68,7 @@ export default function FindingCard({ finding }: FindingCardProps) {
   };
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-slate-900/40 backdrop-blur-xl p-5 md:p-6 shadow-lg hover:border-white/20 transition-all space-y-4">
+    <div className="w-full rounded-2xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-xl p-5 md:p-6 shadow-lg hover:border-white/20 transition-all space-y-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
       {/* Top Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-2.5">
@@ -77,19 +77,19 @@ export default function FindingCard({ finding }: FindingCardProps) {
             <span>{badge.label}</span>
           </span>
 
-          <span className="text-xs font-mono text-slate-500 px-2 py-0.5 rounded-md bg-white/[0.04]">
+          <span className="text-xs font-mono text-neutral-400 px-2.5 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06]">
             {finding.category.toUpperCase()}
           </span>
 
           {finding.owaspMapping && (
-            <span className="hidden md:inline-block text-[11px] font-mono text-slate-500 truncate max-w-[280px]">
+            <span className="hidden md:inline-block text-[11px] font-mono text-neutral-400 truncate max-w-[280px]">
               {finding.owaspMapping}
             </span>
           )}
         </div>
 
         {finding.deduction > 0 && (
-          <span className="text-xs font-mono font-semibold text-red-400/90 self-start sm:self-auto">
+          <span className="text-xs font-mono font-semibold text-neutral-400 self-start sm:self-auto">
             -{finding.deduction} pts
           </span>
         )}
@@ -102,51 +102,51 @@ export default function FindingCard({ finding }: FindingCardProps) {
 
       {/* Asset location if present */}
       {finding.assetUrl && (
-        <div className="flex items-center space-x-2 text-xs font-mono text-slate-400 bg-slate-950/50 rounded-lg px-3 py-1.5 border border-white/[0.04] overflow-x-auto">
-          <span className="text-slate-500 shrink-0">Asset:</span>
-          <span className="text-cyan-400/90 truncate">{finding.assetUrl}</span>
+        <div className="flex items-center space-x-2 text-xs font-mono text-neutral-400 bg-[#050608] rounded-lg px-3 py-1.5 border border-white/[0.06] overflow-x-auto">
+          <span className="text-neutral-500 shrink-0">Asset:</span>
+          <span className="text-neutral-300 truncate">{finding.assetUrl}</span>
         </div>
       )}
 
       {/* Evidence snippet if present */}
       {finding.maskedEvidence && (
         <div className="space-y-1">
-          <span className="text-[11px] font-mono uppercase tracking-wider text-slate-500">
+          <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400">
             Evidence (Redacted):
           </span>
-          <pre className="text-xs font-mono text-amber-300 bg-slate-950/70 p-3 rounded-xl border border-amber-500/20 overflow-x-auto whitespace-pre-wrap">
+          <pre className="text-xs font-mono text-amber-200/90 bg-[#050608] p-3 rounded-xl border border-white/[0.08] overflow-x-auto whitespace-pre-wrap">
             {finding.maskedEvidence}
           </pre>
         </div>
       )}
 
       {/* Plain-English Impact */}
-      <div className="bg-slate-950/30 rounded-xl p-3.5 border border-white/[0.05] space-y-1">
-        <span className="text-xs font-semibold text-slate-300 flex items-center space-x-1.5">
+      <div className="bg-[#050608]/80 rounded-xl p-3.5 border border-white/[0.06] space-y-1">
+        <span className="text-xs font-semibold text-neutral-300 flex items-center space-x-1.5">
           <span>Business & Security Impact:</span>
         </span>
-        <p className="text-xs text-slate-400 leading-relaxed">
+        <p className="text-xs text-neutral-400 leading-relaxed">
           {finding.impact}
         </p>
       </div>
 
-      {/* AI Remediation Box */}
+      {/* AI Remediation Action Box */}
       <div className="pt-2">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-gradient-to-r from-emerald-500/5 via-cyan-500/5 to-transparent rounded-xl p-3 border border-emerald-500/20">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white/[0.02] rounded-xl p-3.5 border border-white/[0.08]">
           <div className="flex items-center space-x-2.5">
-            <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center shrink-0">
-              <Bot className="h-4 w-4 text-emerald-400" />
+            <div className="h-8 w-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
+              <Bot className="h-4 w-4 text-white" />
             </div>
             <div>
               <div className="text-xs font-semibold text-white">AI Remediation Prompt</div>
-              <div className="text-[11px] text-slate-400">Copy straight into Cursor, Claude, or ChatGPT</div>
+              <div className="text-[11px] text-neutral-400">Copy directly into Cursor, Claude, or ChatGPT</div>
             </div>
           </div>
 
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setExpandedPrompt(!expandedPrompt)}
-              className="text-xs text-slate-400 hover:text-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-white/[0.05] transition-all flex items-center space-x-1"
+              className="text-xs text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/[0.05] transition-all flex items-center space-x-1 font-medium"
             >
               <span>{expandedPrompt ? 'Hide' : 'Preview'}</span>
               {expandedPrompt ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
@@ -154,16 +154,16 @@ export default function FindingCard({ finding }: FindingCardProps) {
 
             <button
               onClick={handleCopyPrompt}
-              className="flex items-center justify-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-medium text-emerald-300 transition-all shadow-sm"
+              className="flex items-center justify-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black text-xs font-semibold transition-all shadow-sm active:scale-[0.98]"
             >
               {copiedPrompt ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-emerald-400" />
-                  <span className="font-semibold text-emerald-400">Copied!</span>
+                  <Check className="h-3.5 w-3.5 text-emerald-600" />
+                  <span className="font-semibold text-emerald-700">Copied!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 text-emerald-400" />
+                  <Copy className="h-3.5 w-3.5 text-black" />
                   <span>Copy AI Prompt</span>
                 </>
               )}
@@ -173,7 +173,7 @@ export default function FindingCard({ finding }: FindingCardProps) {
 
         {/* Expanded Prompt Preview */}
         {expandedPrompt && (
-          <div className="mt-2.5 p-3.5 bg-slate-950/80 rounded-xl border border-white/[0.08] font-mono text-xs text-slate-300 whitespace-pre-wrap leading-relaxed animate-fadeIn">
+          <div className="mt-2.5 p-3.5 bg-[#050608] rounded-xl border border-white/[0.08] font-mono text-xs text-neutral-300 whitespace-pre-wrap leading-relaxed animate-fadeIn">
             {finding.fixPrompt}
           </div>
         )}
