@@ -1,12 +1,34 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import TerminalStepper from '@/components/TerminalStepper';
 import ScoreCard from '@/components/ScoreCard';
 import FindingCard from '@/components/FindingCard';
+import ChecklistModal from '@/components/ChecklistModal';
 import { ScanResult, FindingCategory } from '@/lib/types/scan';
-import { Shield, Sparkles, ArrowRight, CheckCircle2, AlertTriangle, Eye, ShieldAlert, Cpu } from 'lucide-react';
+import { 
+  Shield, 
+  Sparkles, 
+  ArrowRight, 
+  CheckCircle2, 
+  AlertTriangle, 
+  Eye, 
+  ShieldAlert, 
+  Cpu, 
+  History, 
+  ListChecks, 
+  Zap 
+} from 'lucide-react';
+
+interface RecentScan {
+  url: string;
+  grade: string;
+  score: number;
+  timestamp: number;
+}
+
+const RECENT_SCANS_KEY = 'shipsafe_recent_scans';
 
 export default function Home() {
   const [url, setUrl] = useState('');
@@ -16,6 +38,39 @@ export default function Home() {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | FindingCategory>('all');
+  const [checklistOpen, setChecklistOpen] = useState(false);
+  const [recentScans, setRecentScans] = useState<RecentScan[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(RECENT_SCANS_KEY);
+      if (stored) {
+        setRecentScans(JSON.parse(stored));
+      }
+    } catch {
+      // ignore JSON storage errors
+    }
+  }, []);
+
+  const saveToRecentScans = (newScan: RecentScan) => {
+    try {
+      const filtered = recentScans.filter((s) => s.url !== newScan.url);
+      const updated = [newScan, ...filtered].slice(0, 4);
+      setRecentScans(updated);
+      localStorage.setItem(RECENT_SCANS_KEY, JSON.stringify(updated));
+    } catch {
+      // ignore
+    }
+  };
+
+  const clearRecentScans = () => {
+    setRecentScans([]);
+    try {
+      localStorage.removeItem(RECENT_SCANS_KEY);
+    } catch {
+      // ignore
+    }
+  };
 
   const startScan = async (targetUrl: string, isDemo = false) => {
     setError(null);
@@ -40,6 +95,13 @@ export default function Home() {
       }
 
       setResult(data as ScanResult);
+
+      saveToRecentScans({
+        url: targetUrl,
+        grade: data.grade,
+        score: data.score,
+        timestamp: Date.now(),
+      });
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred.';
       setError(msg);
@@ -62,9 +124,23 @@ export default function Home() {
   };
 
   const handleDemoScan = () => {
-    setUrl('https://demo-vibe-target.internal');
+    const demoUrl = 'https://demo-vibe-target.internal';
+    setUrl(demoUrl);
     setConfirmedOwnership(true);
-    startScan('https://demo-vibe-target.internal', true);
+    startScan(demoUrl, true);
+  };
+
+  const handleLiveSelfScan = () => {
+    const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://shipsafe.vercel.app';
+    setUrl(currentOrigin);
+    setConfirmedOwnership(true);
+    startScan(currentOrigin, false);
+  };
+
+  const handleSelectRecent = (recentUrl: string) => {
+    setUrl(recentUrl);
+    setConfirmedOwnership(true);
+    setError(null);
   };
 
   const handleReset = () => {
@@ -82,7 +158,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-neutral-100 flex flex-col selection:bg-white selection:text-black">
-      <Header />
+      <Header onOpenChecklist={() => setChecklistOpen(true)} />
+
+      {/* Checklist Modal */}
+      <ChecklistModal isOpen={checklistOpen} onClose={() => setChecklistOpen(false)} />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 md:py-14">
         {/* State 1: Scan Results Available */}
@@ -111,7 +190,7 @@ export default function Home() {
                     : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
-                Secrets & BaaS ({result.findings.filter(f => f.category === 'secrets' || f.category === 'baas').length})
+                Secrets &amp; BaaS ({result.findings.filter(f => f.category === 'secrets' || f.category === 'baas').length})
               </button>
 
               <button
@@ -122,7 +201,7 @@ export default function Home() {
                     : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
-                Headers & Cookies ({result.findings.filter(f => f.category === 'headers' || f.category === 'cookies').length})
+                Headers &amp; Cookies ({result.findings.filter(f => f.category === 'headers' || f.category === 'cookies').length})
               </button>
 
               <button
@@ -133,7 +212,7 @@ export default function Home() {
                     : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
                 }`}
               >
-                Artifacts & Maps ({result.findings.filter(f => f.category === 'artifacts').length})
+                Artifacts &amp; Maps ({result.findings.filter(f => f.category === 'artifacts').length})
               </button>
             </div>
 
@@ -185,7 +264,7 @@ export default function Home() {
               <p className="text-sm md:text-base text-neutral-400 leading-relaxed max-w-2xl mx-auto">
                 The 10-second passive auditor for web apps built with Cursor, v0, Bolt, and modern AI tools.
                 Catches leaked Supabase admin keys, exposed source maps, and missing headers with 
-                <span className="text-neutral-200 font-medium"> copy-paste AI remediation prompts</span>.
+                <span className="text-neutral-200 font-medium"> framework-aware copy-paste AI prompts</span>.
               </p>
             </div>
 
@@ -209,6 +288,90 @@ export default function Home() {
                       />
                     </div>
                   </div>
+
+                  {/* Preset Quick Target Pills */}
+                  <div className="space-y-1.5 pt-1">
+                    <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between">
+                      <span>Quick Test Presets:</span>
+                      <button
+                        type="button"
+                        onClick={() => setChecklistOpen(true)}
+                        className="text-[11px] text-neutral-400 hover:text-white flex items-center space-x-1 transition-colors"
+                      >
+                        <ListChecks className="h-3 w-3" />
+                        <span>Open Launch Checklist</span>
+                      </button>
+                    </div>
+
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleDemoScan}
+                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all"
+                      >
+                        <Zap className="h-3.5 w-3.5 text-amber-400" />
+                        <span>Seeded Demo</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-red-500/20 text-red-400 border border-red-500/30">Grade D</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleLiveSelfScan}
+                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all"
+                      >
+                        <Shield className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>ShipSafe Live</span>
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Grade A+</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Recent Scans History Chips */}
+                  {recentScans.length > 0 && (
+                    <div className="space-y-1.5 pt-2 border-t border-white/[0.05]">
+                      <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400">
+                        <span className="flex items-center space-x-1.5">
+                          <History className="h-3 w-3" />
+                          <span>Recent Scans:</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearRecentScans}
+                          className="hover:text-white transition-colors"
+                        >
+                          Clear
+                        </button>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2">
+                        {recentScans.map((scan, i) => {
+                          const displayHost = scan.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                          return (
+                            <button
+                              key={scan.url + i}
+                              type="button"
+                              onClick={() => handleSelectRecent(scan.url)}
+                              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#050608] hover:bg-white/[0.06] border border-white/[0.08] text-[11px] font-mono text-neutral-300 hover:text-white transition-all max-w-[260px] truncate"
+                              title={`Select ${scan.url}`}
+                            >
+                              <span className="truncate">{displayHost}</span>
+                              <span className={`text-[10px] font-bold px-1 rounded ${
+                                scan.grade.startsWith('A') 
+                                  ? 'bg-emerald-500/20 text-emerald-400' 
+                                  : scan.grade.startsWith('B')
+                                  ? 'bg-blue-500/20 text-blue-400'
+                                  : scan.grade.startsWith('C')
+                                  ? 'bg-amber-500/20 text-amber-400'
+                                  : 'bg-red-500/20 text-red-400'
+                              }`}>
+                                {scan.grade} ({scan.score})
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Authorization Checkbox */}
                   <div className="flex items-start space-x-3 bg-[#050608]/70 p-3.5 rounded-xl border border-white/[0.06]">
@@ -251,15 +414,42 @@ export default function Home() {
                       className="w-full sm:w-auto h-12 px-5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-neutral-200 flex items-center justify-center space-x-2 transition-all shrink-0 active:scale-[0.98]"
                     >
                       <Sparkles className="h-4 w-4 text-neutral-400" />
-                      <span>⚡ Try 1-Click Demo Scan</span>
+                      <span>⚡ 1-Click Demo Scan</span>
                     </button>
                   </div>
                 </form>
               </div>
             </div>
 
+            {/* Pre-Launch Readiness Callout Card */}
+            <div className="max-w-2xl mx-auto">
+              <div 
+                onClick={() => setChecklistOpen(true)}
+                className="cursor-pointer group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/60 hover:bg-[#0B0D11] hover:border-white/20 p-4 transition-all flex items-center justify-between gap-4 backdrop-blur-xl"
+              >
+                <div className="flex items-center space-x-3.5">
+                  <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
+                    <ListChecks className="h-4 w-4 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-white group-hover:text-white transition-colors">
+                      Pre-Launch Security Checklist
+                    </h4>
+                    <p className="text-[11px] text-neutral-400">
+                      7 critical deployment checkpoints (RLS, CSP, Source Maps, Rate Limiting)
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-1 text-xs font-mono text-neutral-400 group-hover:text-white transition-colors shrink-0">
+                  <span>Open</span>
+                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </div>
+            </div>
+
             {/* Architecture Highlights Section */}
-            <div className="pt-8">
+            <div className="pt-4">
               <div className="text-center mb-10 space-y-2">
                 <span className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                   Engineering Architecture

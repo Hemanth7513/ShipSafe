@@ -2,7 +2,12 @@
 
 import React, { useState } from 'react';
 import { Finding, FindingSeverity } from '@/lib/types/scan';
-import { AlertCircle, AlertTriangle, Info, Check, Copy, ChevronDown, ChevronUp, Bot } from 'lucide-react';
+import { 
+  getTailoredAiPrompt, 
+  SupportedFramework, 
+  FRAMEWORK_LABELS 
+} from '@/lib/scanner/remediation/framework-prompts';
+import { AlertCircle, AlertTriangle, Info, Check, Copy, ChevronDown, ChevronUp, Bot, Sparkles } from 'lucide-react';
 
 interface FindingCardProps {
   finding: Finding;
@@ -57,12 +62,15 @@ function getSeverityBadge(severity: FindingSeverity) {
 export default function FindingCard({ finding }: FindingCardProps) {
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [expandedPrompt, setExpandedPrompt] = useState(false);
+  const [framework, setFramework] = useState<SupportedFramework>('nextjs');
 
   const badge = getSeverityBadge(finding.severity);
   const IconComponent = badge.icon;
 
+  const currentPrompt = getTailoredAiPrompt(finding, framework);
+
   const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(finding.fixPrompt);
+    navigator.clipboard.writeText(currentPrompt);
     setCopiedPrompt(true);
     setTimeout(() => setCopiedPrompt(false), 2500);
   };
@@ -130,51 +138,83 @@ export default function FindingCard({ finding }: FindingCardProps) {
         </p>
       </div>
 
-      {/* AI Remediation Action Box */}
+      {/* AI Remediation Action Box with Framework Switcher */}
       <div className="pt-2">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white/[0.02] rounded-xl p-3.5 border border-white/[0.08]">
-          <div className="flex items-center space-x-2.5">
-            <div className="h-8 w-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
-              <Bot className="h-4 w-4 text-white" />
+        <div className="bg-white/[0.02] rounded-xl p-3.5 border border-white/[0.08] space-y-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="flex items-center space-x-2.5">
+              <div className="h-8 w-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center shrink-0">
+                <Bot className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-white flex items-center space-x-1.5">
+                  <span>AI Remediation Prompt</span>
+                  <Sparkles className="h-3 w-3 text-neutral-400" />
+                </div>
+                <div className="text-[11px] text-neutral-400">Select your stack to generate tailored prompt:</div>
+              </div>
             </div>
-            <div>
-              <div className="text-xs font-semibold text-white">AI Remediation Prompt</div>
-              <div className="text-[11px] text-neutral-400">Copy directly into Cursor, Claude, or ChatGPT</div>
+
+            {/* Framework Switcher Pills */}
+            <div className="flex items-center space-x-1 bg-[#050608] p-1 rounded-lg border border-white/[0.08] self-start sm:self-auto">
+              {(['nextjs', 'vite', 'express', 'remix'] as SupportedFramework[]).map((fw) => (
+                <button
+                  key={fw}
+                  type="button"
+                  onClick={() => setFramework(fw)}
+                  className={`px-2 py-1 rounded text-[11px] font-mono transition-all ${
+                    framework === fw
+                      ? 'bg-white text-black font-semibold shadow-sm'
+                      : 'text-neutral-400 hover:text-white'
+                  }`}
+                >
+                  {fw === 'nextjs' ? 'Next.js' : fw === 'vite' ? 'Vite' : fw === 'express' ? 'Express' : 'Remix'}
+                </button>
+              ))}
             </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => setExpandedPrompt(!expandedPrompt)}
-              className="text-xs text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/[0.05] transition-all flex items-center space-x-1 font-medium"
-            >
-              <span>{expandedPrompt ? 'Hide' : 'Preview'}</span>
-              {expandedPrompt ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </button>
+          {/* Action Row */}
+          <div className="flex items-center justify-between pt-1 border-t border-white/[0.04]">
+            <span className="text-[11px] font-mono text-neutral-500">
+              Targeted for: <span className="text-neutral-300 font-medium">{FRAMEWORK_LABELS[framework]}</span>
+            </span>
 
-            <button
-              onClick={handleCopyPrompt}
-              className="flex items-center justify-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black text-xs font-semibold transition-all shadow-sm active:scale-[0.98]"
-            >
-              {copiedPrompt ? (
-                <>
-                  <Check className="h-3.5 w-3.5 text-emerald-600" />
-                  <span className="font-semibold text-emerald-700">Copied!</span>
-                </>
-              ) : (
-                <>
-                  <Copy className="h-3.5 w-3.5 text-black" />
-                  <span>Copy AI Prompt</span>
-                </>
-              )}
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                type="button"
+                onClick={() => setExpandedPrompt(!expandedPrompt)}
+                className="text-xs text-neutral-400 hover:text-white px-2.5 py-1.5 rounded-lg hover:bg-white/[0.05] transition-all flex items-center space-x-1 font-medium"
+              >
+                <span>{expandedPrompt ? 'Hide' : 'Preview'}</span>
+                {expandedPrompt ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCopyPrompt}
+                className="flex items-center justify-center space-x-1.5 px-3.5 py-1.5 rounded-lg bg-white hover:bg-neutral-200 text-black text-xs font-semibold transition-all shadow-sm active:scale-[0.98]"
+              >
+                {copiedPrompt ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-600" />
+                    <span className="font-semibold text-emerald-700">Copied!</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3.5 w-3.5 text-black" />
+                    <span>Copy AI Prompt</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Expanded Prompt Preview */}
         {expandedPrompt && (
           <div className="mt-2.5 p-3.5 bg-[#050608] rounded-xl border border-white/[0.08] font-mono text-xs text-neutral-300 whitespace-pre-wrap leading-relaxed animate-fadeIn">
-            {finding.fixPrompt}
+            {currentPrompt}
           </div>
         )}
       </div>
