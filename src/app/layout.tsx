@@ -14,6 +14,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://shipsafe.dev'),
   title: "ShipSafe — Passive Security Hygiene Auditor for AI-Built Web Apps",
   description: "Instant 10-second passive security audit for web apps built with Cursor, v0, Bolt, and modern AI tools. Generates letter grades and copy-paste AI fix prompts.",
 };

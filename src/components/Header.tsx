@@ -1,24 +1,15 @@
 import React from 'react';
 import Link from 'next/link';
-import { Shield, Terminal } from 'lucide-react';
+import { Terminal } from 'lucide-react';
+import Logo from './Logo';
 
 export default function Header() {
   return (
     <header className="w-full border-b border-white/[0.08] bg-slate-950/60 backdrop-blur-xl sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-cyan-500 p-0.5 shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-all">
-            <div className="h-full w-full bg-slate-950 rounded-[10px] flex items-center justify-center">
-              <Shield className="h-4 w-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-            </div>
-          </div>
-          <div className="flex items-baseline space-x-1.5">
-            <span className="text-lg font-bold tracking-tight text-white">ShipSafe</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              v1.0
-            </span>
-          </div>
+        {/* Custom Brand Logo */}
+        <Link href="/" className="hover:opacity-95 transition-opacity">
+          <Logo size="md" />
         </Link>
 
         {/* Status Badge & Links */}

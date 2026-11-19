@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/branding/banner.svg" alt="ShipSafe Banner" width="100%" />
+</p>
+
 # 🛡️ ShipSafe — Passive Security Hygiene Auditor
 
 > **The 10-Second Security Sanity Check for Startups & AI-Built Web Apps.**  

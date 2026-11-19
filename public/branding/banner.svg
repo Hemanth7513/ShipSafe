@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617" />
+      <stop offset="50%" stop-color="#090D16" />
+      <stop offset="100%" stop-color="#020617" />
+    </linearGradient>
+    <radialGradient id="cyanGlow" cx="50%" cy="10%" r="60%">
+      <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.18" />
+      <stop offset="100%" stop-color="#06B6D4" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="360" fill="url(#bgGrad)" />
+  <rect width="1200" height="360" fill="url(#cyanGlow)" />
+  <line x1="0" y1="359" x2="1200" y2="359" stroke="#ffffff" stroke-opacity="0.08" />
+
+  <!-- Shield Icon Graphic -->
+  <g transform="translate(140, 100) scale(3.2)">
+    <path
+      d="M24 4L8 10V22C8 32.5 14.8 41.8 24 44C33.2 41.8 40 32.5 40 22V10L24 4Z"
+      stroke="url(#shieldGrad)"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      fill="#020617"
+    />
+    <path d="M24 12L32 24L24 21L16 24L24 12Z" fill="url(#textGrad)" />
+    <path
+      d="M24 25L30 33C28 36 26 37 24 38C22 37 20 36 18 33L24 25Z"
+      fill="url(#shieldGrad)"
+      fill-opacity="0.4"
+      stroke="url(#shieldGrad)"
+      stroke-width="1.5"
+    />
+    <circle cx="24" cy="23" r="2.5" fill="#FFFFFF" />
+  </g>
+
+  <!-- Typography -->
+  <g transform="translate(340, 140)">
+    <rect x="0" y="-30" width="340" height="28" rx="14" fill="#10B981" fill-opacity="0.1" stroke="#10B981" stroke-opacity="0.3" />
+    <text x="14" y="-12" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="700" fill="#34D399" letter-spacing="1.5">PASSIVE HYGIENE AUDITOR</text>
+
+    <text x="0" y="55" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="900" fill="#FFFFFF" letter-spacing="-1.5">Ship<tspan fill="url(#textGrad)">Safe</tspan></text>
+
+    <text x="0" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#94A3B8">The 10-Second Security Sanity Check for Startups &amp; AI-Built Web Apps.</text>
+    <text x="0" y="135" font-family="monospace" font-size="14" fill="#64748B">OWASP Top 10 Mapped • BaaS Disambiguation • Shannon Entropy Secrets • A–F Scorecard</text>
+  </g>
+</svg>
