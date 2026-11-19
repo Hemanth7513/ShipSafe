@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { executePassiveScan } from '@/lib/scanner/fetcher/client';
+import { runPassiveAudit } from '@/lib/scanner/orchestrator';
 import { calculateScoreAndGrade } from '@/lib/scanner/scoring/engine';
-import { Finding, ScanResult } from '@/lib/types/scanner';
+import { checkRateLimit } from '@/lib/security/rate-limit';
+import { validateScanRequest } from '@/lib/security/validate';
+import { Finding, ScanResult } from '@/lib/types/scan';
 
-/**
- * Pre-computed deterministic demo results for 1-click recruiter and reviewer tests.
- * Guaranteed 0ms network latency and showcases all detection categories safely.
- */
 function getDemoTargetScanResult(): ScanResult {
   const demoFindings: Finding[] = [
     {
@@ -120,62 +118,45 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { url, isDemo, confirmedOwnership } = body;
 
-    // 1. Instant Safe Demo Mode
+    // 1. Instant Safe Demo Mode (Bypasses rate limiting)
     if (isDemo || url === 'demo' || url?.includes('demo-target')) {
-      // Simulate brief realistic scan delay for terminal UX
       await new Promise(r => setTimeout(r, 800));
       return NextResponse.json(getDemoTargetScanResult());
     }
 
-    // 2. Validate URL presence
-    if (!url || typeof url !== 'string') {
+    // 2. Validate input schema & ownership confirmation
+    const validation = validateScanRequest(url, confirmedOwnership);
+    if (!validation.valid || !validation.normalizedUrl) {
       return NextResponse.json(
-        { error: 'A valid target URL is required.' },
+        { error: validation.error || 'Invalid scan request parameters.' },
         { status: 400 }
       );
     }
 
-    // 3. Authorization check
-    if (!confirmedOwnership) {
+    // 3. Enforce Rate Limiting
+    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    const rateLimit = checkRateLimit(clientIp);
+    if (!rateLimit.allowed) {
       return NextResponse.json(
-        { error: 'You must confirm domain ownership or explicit audit authorization before scanning.' },
-        { status: 403 }
+        { 
+          error: `Scan rate limit exceeded (10 scans/hour). Please retry in ${rateLimit.resetInSeconds} seconds.` 
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': String(rateLimit.resetInSeconds),
+            'X-RateLimit-Remaining': '0'
+          }
+        }
       );
     }
 
-    let normalizedUrl = url.trim();
-    if (!normalizedUrl.startsWith('http://') && !normalizedUrl.startsWith('https://')) {
-      normalizedUrl = `https://${normalizedUrl}`;
-    }
-
-    const startTime = Date.now();
-    const parsedTarget = new URL(normalizedUrl);
-
-    // 4. Execute passive scan
-    const scanData = await executePassiveScan(normalizedUrl, {
+    // 4. Run full passive audit via master orchestrator
+    const result = await runPassiveAudit(validation.normalizedUrl, {
       perRequestTimeoutMs: 5000,
       maxScripts: 15,
       maxTotalBytes: 5 * 1024 * 1024,
     });
-
-    const durationMs = Date.now() - startTime;
-    const { overallScore, grade, severityCounts } = calculateScoreAndGrade(scanData.findings);
-
-    const result: ScanResult = {
-      scanId: `scan-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      targetUrl: normalizedUrl,
-      targetHost: parsedTarget.hostname,
-      resolvedIp: scanData.resolvedIp,
-      scannedAt: new Date().toISOString(),
-      durationMs,
-      overallScore,
-      grade,
-      severityCounts,
-      findings: scanData.findings,
-      scannedAssets: scanData.scannedAssets,
-      frameworkDetected: scanData.frameworkDetected,
-      isDemoTarget: false,
-    };
 
     return NextResponse.json(result);
 
