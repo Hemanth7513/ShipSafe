@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ArrowUp, Zap, ListChecks, Shield } from 'lucide-react';
+import { ArrowUp, Terminal, ListChecks, Shield } from 'lucide-react';
 
 interface FloatingNavProps {
   onScrollToTop: () => void;
@@ -43,16 +43,16 @@ export default function FloatingNav({ onScrollToTop, onRunDemo, onOpenChecklist 
         <button
           type="button"
           onClick={onRunDemo}
-          className="hidden sm:flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-mono text-neutral-300 hover:text-white transition-all border border-white/10"
+          className="hidden sm:flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-mono text-neutral-300 hover:text-white transition-all border border-white/10"
         >
-          <Zap className="h-3 w-3 text-amber-400" />
-          <span>Demo</span>
+          <Terminal className="h-3 w-3 text-neutral-400" />
+          <span>Sandbox Target</span>
         </button>
 
         <button
           type="button"
           onClick={onOpenChecklist}
-          className="flex items-center space-x-1 px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-mono text-neutral-300 hover:text-white transition-all border border-white/10"
+          className="flex items-center space-x-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-xs font-mono text-neutral-300 hover:text-white transition-all border border-white/10"
         >
           <ListChecks className="h-3 w-3 text-neutral-400" />
           <span>Checklist</span>

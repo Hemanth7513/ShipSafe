@@ -137,9 +137,9 @@ export default function ChecklistModal({ isOpen, onClose }: ChecklistModalProps)
             </div>
             <div>
               <h2 className="text-lg font-bold text-white tracking-tight flex items-center space-x-2">
-                <span>Pre-Launch Security Checklist</span>
+                <span>Pre-Launch Security Protocol</span>
               </h2>
-              <p className="text-xs text-neutral-400">Essential hygiene checks for AI-built web applications</p>
+              <p className="text-xs text-neutral-400">Pre-deployment security hygiene verification for modern web applications</p>
             </div>
           </div>
 
@@ -156,7 +156,7 @@ export default function ChecklistModal({ isOpen, onClose }: ChecklistModalProps)
         <div className="px-6 py-4 bg-white/[0.02] border-b border-white/[0.06] flex items-center justify-between gap-4">
           <div className="flex-1 space-y-1.5">
             <div className="flex justify-between text-xs font-mono">
-              <span className="text-neutral-400">Launch Readiness:</span>
+              <span className="text-neutral-400">Hardening Conformance:</span>
               <span className="text-white font-semibold">{completed} / {total} Verified ({percentage}%)</span>
             </div>
             <div className="h-2 w-full bg-[#050608] rounded-full overflow-hidden border border-white/[0.06]">
@@ -236,7 +236,7 @@ export default function ChecklistModal({ isOpen, onClose }: ChecklistModalProps)
                   </p>
 
                   <div className="text-[11px] font-mono text-neutral-400 bg-[#050608] p-2 rounded-lg border border-white/[0.04] mt-1.5">
-                    <span className="text-neutral-300 font-medium">Fix: </span>
+                    <span className="text-neutral-300 font-medium">Directive: </span>
                     {item.recommendation}
                   </div>
                 </div>

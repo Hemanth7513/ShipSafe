@@ -21,8 +21,8 @@ export default async function Image() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          backgroundColor: '#020617',
-          backgroundImage: 'radial-gradient(circle at 50% 10%, rgba(6, 182, 212, 0.15) 0%, transparent 60%), radial-gradient(circle at 90% 90%, rgba(16, 185, 129, 0.12) 0%, transparent 50%)',
+          backgroundColor: '#000000',
+          backgroundImage: 'radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 60%)',
           fontFamily: 'sans-serif',
           color: '#ffffff',
           padding: '60px',
@@ -34,18 +34,19 @@ export default async function Image() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            backgroundColor: 'rgba(16, 185, 129, 0.1)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
             borderRadius: '9999px',
-            padding: '8px 20px',
-            fontSize: '18px',
-            color: '#34d399',
-            marginBottom: '28px',
-            letterSpacing: '0.05em',
+            padding: '8px 24px',
+            fontSize: '16px',
+            color: '#d4d4d8',
+            marginBottom: '32px',
+            letterSpacing: '0.08em',
             textTransform: 'uppercase',
+            fontWeight: 600,
           }}
         >
-          ⚡ Passive Security Hygiene for AI-Built Apps
+          Passive Security Hygiene Assessment
         </div>
 
         {/* Main Logo & Headline */}
@@ -54,24 +55,25 @@ export default async function Image() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            marginBottom: '16px',
+            marginBottom: '20px',
           }}
         >
           <span
             style={{
-              fontSize: '84px',
+              fontSize: '88px',
               fontWeight: 900,
-              letterSpacing: '-0.03em',
+              letterSpacing: '-0.04em',
+              color: '#ffffff',
             }}
           >
             Ship
           </span>
           <span
             style={{
-              fontSize: '84px',
+              fontSize: '88px',
               fontWeight: 900,
-              letterSpacing: '-0.03em',
-              color: '#06b6d4',
+              letterSpacing: '-0.04em',
+              color: '#a1a1aa',
               marginLeft: '4px',
             }}
           >
@@ -82,16 +84,16 @@ export default async function Image() {
         {/* Subtitle */}
         <div
           style={{
-            fontSize: '28px',
-            color: '#94a3b8',
+            fontSize: '24px',
+            color: '#a1a1aa',
             textAlign: 'center',
-            maxWidth: '900px',
-            lineHeight: 1.4,
-            marginBottom: '40px',
+            maxWidth: '920px',
+            lineHeight: 1.5,
+            marginBottom: '48px',
           }}
         >
-          The 10-Second Sanity Check for Startups & AI-Built Web Apps.
-          Detects leaked admin keys, exposed source maps, and missing headers with copy-paste AI fix prompts.
+          Zero-exploit passive security auditor for AI-generated and rapid-prototyped web applications.
+          Catches leaked credentials, exposed source maps, and missing defense-in-depth headers.
         </div>
 
         {/* Feature Pills Footer */}
@@ -99,21 +101,22 @@ export default async function Image() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '14px',
+            gap: '12px',
           }}
         >
-          {['OWASP Top 10 Mapped', 'Supabase BaaS Disambiguation', 'Shannon Entropy (H >= 3.6)', 'A–F Grading Engine'].map((pill) => (
+          {['OWASP ASVS v4.0', 'BaaS Claims Decoding', 'Shannon Entropy Analysis', 'RFC 6890 SSRF Guard'].map((pill) => (
             <div
               key={pill}
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                borderRadius: '12px',
-                padding: '10px 18px',
-                fontSize: '16px',
-                color: '#e2e8f0',
+                backgroundColor: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '9999px',
+                padding: '8px 18px',
+                fontSize: '14px',
+                color: '#e4e4e7',
+                fontFamily: 'monospace',
               }}
             >
               {pill}

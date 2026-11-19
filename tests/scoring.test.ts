@@ -76,7 +76,7 @@ function runScoringTests() {
   };
 
   const md = generateMarkdownReport(mockScanResult);
-  assert(md.includes('# 🛡️ ShipSafe Security Hygiene Report'), 'Report includes main title banner');
+  assert(md.includes('# ShipSafe Security Hygiene Report'), 'Report includes main title banner');
   assert(md.includes('Overall Grade:** **D** (60/100)'), 'Report includes Grade D badge');
   assert(md.includes('Fix prompt content'), 'Report includes AI Fix Prompt snippet');
 

@@ -12,7 +12,6 @@ import FloatingNav from '@/components/FloatingNav';
 import { ScanResult, FindingCategory } from '@/lib/types/scan';
 import { 
   Shield, 
-  Sparkles, 
   ArrowRight, 
   CheckCircle2, 
   AlertTriangle, 
@@ -21,9 +20,10 @@ import {
   Cpu, 
   History, 
   ListChecks, 
-  Zap,
+  Terminal,
   Activity,
-  Check
+  Check,
+  SearchCode
 } from 'lucide-react';
 
 interface RecentScan {
@@ -137,11 +137,11 @@ export default function Home() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) {
-      setError('Please enter a website URL.');
+      setError('Please provide a target web application URL.');
       return;
     }
     if (!confirmedOwnership) {
-      setError('Please check the authorization box confirming you have permission to audit this domain.');
+      setError('Please acknowledge the authorization confirmation verifying permission to audit this domain.');
       return;
     }
     startScan(url.trim(), false);
@@ -270,8 +270,8 @@ export default function Home() {
             ) : (
               <div className="text-center py-16 bg-[#0B0D11]/60 rounded-3xl border border-white/[0.06]">
                 <CheckCircle2 className="h-10 w-10 text-emerald-400 mx-auto mb-3" />
-                <h3 className="text-base font-semibold text-white">No Issues in this Category</h3>
-                <p className="text-xs text-neutral-400 mt-1">This category passed all verification checks.</p>
+                <h3 className="text-base font-semibold text-white">Zero Hygiene Gaps Identified</h3>
+                <p className="text-xs text-neutral-400 mt-1">This inspection category satisfied all defensive verification rules.</p>
               </div>
             )}
           </div>
@@ -281,7 +281,7 @@ export default function Home() {
             <div className="text-center mb-6 space-y-2">
               <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.06] text-neutral-300 border border-white/10 inline-flex items-center space-x-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Passive Inspection Running</span>
+                <span>Passive Inspection Active</span>
               </span>
               <h2 className="text-2xl font-bold text-white tracking-tight">
                 Auditing {activeTarget}
@@ -295,8 +295,8 @@ export default function Home() {
             {/* Hero Header */}
             <div className="text-center space-y-5 max-w-3xl mx-auto pt-6">
               <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 shadow-sm">
-                <Sparkles className="h-3.5 w-3.5 text-white" />
-                <span>Passive Security Hygiene for AI-Built Apps</span>
+                <SearchCode className="h-3.5 w-3.5 text-white" />
+                <span>Zero-Exploit Passive Security Hygiene Assessment</span>
               </div>
 
               <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
@@ -307,24 +307,24 @@ export default function Home() {
               </h1>
 
               <p className="text-sm md:text-base text-neutral-400 leading-relaxed max-w-2xl mx-auto">
-                The 10-second passive auditor for web apps built with Cursor, v0, Bolt, and modern AI tools.
-                Catches leaked Supabase admin keys, exposed source maps, and missing headers with 
-                <span className="text-neutral-200 font-medium"> framework-aware copy-paste AI prompts</span>.
+                The passive security auditor for modern web applications built with rapid-prototyping AI tools.
+                Catches leaked administrative tokens, exposed source maps, and missing defense-in-depth headers with 
+                <span className="text-neutral-200 font-medium"> framework-tailored remediation directives</span>.
               </p>
 
               {/* Trust Metric Badges */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
                 <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
                   <Check className="h-3 w-3 text-emerald-400" />
-                  <span>100% Passive (0 Payloads)</span>
+                  <span>100% Passive (Zero Payloads)</span>
                 </span>
                 <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
                   <Activity className="h-3 w-3 text-neutral-300" />
-                  <span>&lt;10s Execution</span>
+                  <span>&lt;10s Runtime Execution</span>
                 </span>
                 <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
                   <Shield className="h-3 w-3 text-neutral-300" />
-                  <span>OWASP Top 10 Mapped</span>
+                  <span>OWASP ASVS v4.0 Aligned</span>
                 </span>
               </div>
             </div>
@@ -335,8 +335,8 @@ export default function Home() {
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
                     <label className="text-xs font-mono text-neutral-300 font-medium flex items-center justify-between">
-                      <span>Target Web App URL:</span>
-                      <span className="text-[11px] text-neutral-400">Public HTTP/HTTPS entry</span>
+                      <span>Target Web Application URL:</span>
+                      <span className="text-[11px] text-neutral-400">Public HTTP/HTTPS entrypoint</span>
                     </label>
 
                     <div className="relative">
@@ -345,7 +345,7 @@ export default function Home() {
                         type="text"
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
-                        placeholder="https://myapp.vercel.app or myapp.com"
+                        placeholder="https://app.example.com or example.com"
                         className="w-full h-13 px-4 py-3.5 pr-20 rounded-xl bg-[#050608] border border-white/10 focus:border-white focus:ring-1 focus:ring-white/20 text-sm text-white placeholder-neutral-600 transition-all font-mono outline-none shadow-inner"
                       />
                       <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-400 bg-white/[0.05] border border-white/10 px-2 py-0.5 rounded pointer-events-none hidden sm:inline">
@@ -354,17 +354,17 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Preset Quick Target Pills */}
+                  {/* Preset Target Pills */}
                   <div className="space-y-1.5 pt-1">
                     <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between">
-                      <span>Quick Test Presets:</span>
+                      <span>Target Presets:</span>
                       <button
                         type="button"
                         onClick={() => setChecklistOpen(true)}
                         className="text-[11px] text-neutral-400 hover:text-white flex items-center space-x-1 transition-colors"
                       >
                         <ListChecks className="h-3 w-3" />
-                        <span>Open Launch Checklist</span>
+                        <span>Pre-Launch Checklist</span>
                       </button>
                     </div>
 
@@ -374,8 +374,8 @@ export default function Home() {
                         onClick={handleDemoScan}
                         className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all active:scale-[0.98]"
                       >
-                        <Zap className="h-3.5 w-3.5 text-amber-400" />
-                        <span>Seeded Demo</span>
+                        <Terminal className="h-3.5 w-3.5 text-neutral-400 group-hover:text-white" />
+                        <span>Simulated Target</span>
                         <span className="text-[10px] px-1.5 py-0.2 rounded bg-red-500/20 text-red-400 border border-red-500/30">Grade D</span>
                       </button>
 
@@ -384,20 +384,20 @@ export default function Home() {
                         onClick={handleLiveSelfScan}
                         className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all active:scale-[0.98]"
                       >
-                        <Shield className="h-3.5 w-3.5 text-emerald-400" />
-                        <span>ShipSafe Live</span>
+                        <Shield className="h-3.5 w-3.5 text-neutral-400 group-hover:text-white" />
+                        <span>Self-Inspection (Production)</span>
                         <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Grade A+</span>
                       </button>
                     </div>
                   </div>
 
-                  {/* Recent Scans History Chips */}
+                  {/* Session Scans History */}
                   {recentScans.length > 0 && (
                     <div className="space-y-1.5 pt-2 border-t border-white/[0.05]">
                       <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400">
                         <span className="flex items-center space-x-1.5">
                           <History className="h-3 w-3" />
-                          <span>Recent Scans:</span>
+                          <span>Session History:</span>
                         </span>
                         <button
                           type="button"
@@ -417,7 +417,7 @@ export default function Home() {
                               type="button"
                               onClick={() => handleSelectRecent(scan.url)}
                               className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#050608] hover:bg-white/[0.06] border border-white/[0.08] text-[11px] font-mono text-neutral-300 hover:text-white transition-all max-w-[260px] truncate"
-                              title={`Select ${scan.url}`}
+                              title={`Load ${scan.url}`}
                             >
                               <span className="truncate">{displayHost}</span>
                               <span className={`text-[10px] font-bold px-1 rounded ${
@@ -448,7 +448,7 @@ export default function Home() {
                       className="mt-0.5 h-4 w-4 rounded bg-neutral-900 border-neutral-700 text-white focus:ring-white focus:ring-offset-black"
                     />
                     <label htmlFor="ownership" className="text-xs text-neutral-400 leading-snug cursor-pointer select-none">
-                      I confirm I own this domain or have explicit authorization to audit its public security posture.
+                      I confirm I own this domain or possess explicit authorization to inspect its public security posture.
                     </label>
                   </div>
 
@@ -468,7 +468,7 @@ export default function Home() {
                       className="w-full sm:flex-1 h-12 rounded-xl bg-white hover:bg-neutral-200 text-black font-semibold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-white/5 transition-all disabled:opacity-50 active:scale-[0.98]"
                     >
                       <Shield className="h-4 w-4" />
-                      <span>Run Security Audit</span>
+                      <span>Execute Security Assessment</span>
                       <ArrowRight className="h-4 w-4" />
                     </button>
 
@@ -478,8 +478,8 @@ export default function Home() {
                       disabled={loading}
                       className="w-full sm:w-auto h-12 px-5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-neutral-200 flex items-center justify-center space-x-2 transition-all shrink-0 active:scale-[0.98]"
                     >
-                      <Sparkles className="h-4 w-4 text-neutral-400" />
-                      <span>⚡ 1-Click Demo Scan</span>
+                      <Terminal className="h-4 w-4 text-neutral-400" />
+                      <span>Run Sandboxed Simulation</span>
                     </button>
                   </div>
                 </form>
@@ -498,16 +498,16 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="text-xs font-bold text-white group-hover:text-white transition-colors">
-                      Pre-Launch Security Checklist
+                      Pre-Launch Security Hygiene Protocol
                     </h4>
                     <p className="text-[11px] text-neutral-400">
-                      7 critical deployment checkpoints (RLS, CSP, Source Maps, Rate Limiting)
+                      7 critical deployment verifications (BaaS RLS, CSP, Source Map Stripping, Rate Limiting)
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-1 text-xs font-mono text-neutral-400 group-hover:text-white transition-colors shrink-0">
-                  <span>Open</span>
+                  <span>Open Protocol</span>
                   <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </div>
@@ -523,7 +523,7 @@ export default function Home() {
                   Engineering Architecture
                 </span>
                 <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                  Zero False Positives &amp; Strict SSRF Guard
+                  Zero False-Positive Pipeline &amp; RFC 6890 SSRF Guard
                 </h2>
               </div>
 
@@ -532,9 +532,9 @@ export default function Home() {
                   <div className="h-10 w-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white">
                     <Cpu className="h-5 w-5" />
                   </div>
-                  <h3 className="text-base font-bold text-white">BaaS Disambiguation</h3>
+                  <h3 className="text-base font-bold text-white">BaaS Claims Disambiguation</h3>
                   <p className="text-xs text-neutral-400 leading-relaxed">
-                    Decodes client JWT claims in memory to distinguish between intended public Supabase <code className="text-neutral-200">anon</code> keys and critical <code className="text-red-400">service_role</code> bypass keys.
+                    Decodes client JWT claims in memory to distinguish between intended public Supabase <code className="text-neutral-200">anon</code> tokens and critical <code className="text-red-400">service_role</code> bypass keys.
                   </p>
                 </div>
 
@@ -580,7 +580,7 @@ export default function Home() {
               onClick={scrollToInput} 
               className="hover:text-white transition-colors"
             >
-              Back to Top ↑
+              Top ↑
             </button>
           </div>
         </div>

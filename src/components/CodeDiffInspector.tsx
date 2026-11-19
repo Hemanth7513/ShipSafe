@@ -18,83 +18,83 @@ interface CodeSample {
 const SAMPLES: CodeSample[] = [
   {
     id: 'supabase',
-    title: 'Supabase Key Leakage in Client Components',
+    title: 'BaaS Administrative Key Leakage in Client Bundles',
     tag: 'BaaS & Secrets',
-    vulnerableLabel: 'AI Generated (Vulnerable)',
-    vulnerableCode: `// ❌ AI Tool exported secret to client bundle
-// app/components/UserList.tsx ('use client')
+    vulnerableLabel: 'Unvalidated Rapid Prototype Pattern',
+    vulnerableCode: `// [SECURITY VULNERABILITY] Sensitive administrative secret compiled into client bundle
+// app/components/UserDirectory.tsx ('use client')
 import { createClient } from '@supabase/supabase-js';
 
-// Leaking service_role key with admin privileges!
+// Leaking service_role key with complete Row-Level Security bypass:
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY! // Bypass RLS!
+  process.env.NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY! // Full administrative access!
 );
 
-export default function UserList() {
-  // Any visitor can dump the entire database
+export default function UserDirectory() {
+  // Client bundle exposes service_role key to any public browser inspection
 }`,
-    vulnerableExplanation: 'Prefixing private admin secrets with NEXT_PUBLIC_ embeds them directly into public client JS bundles.',
-    hardenedLabel: 'ShipSafe Hardened',
-    hardenedCode: `// ✅ Secure Server Action / Route Handler
+    vulnerableExplanation: 'Prefixing private administrative secrets with NEXT_PUBLIC_ forces bundlers to inject live credentials into public JavaScript chunks.',
+    hardenedLabel: 'ShipSafe Hardened Architecture',
+    hardenedCode: `// [HARDENED IMPLEMENTATION] Server-side runtime isolation
 // app/actions/users.ts ('use server')
 import { createClient } from '@supabase/supabase-js';
 
-// Server-only: private key is never sent to browser
+// Server-only runtime: private key is strictly isolated in backend memory
 const supabaseAdmin = createClient(
   process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // Protected in Node runtime
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // Isolated in Node runtime
 );
 
-export async function getPrivilegedUsers() {
+export async function getAuthorizedDirectory() {
   const session = await auth();
   if (!session?.user?.isAdmin) throw new Error('Unauthorized');
   return supabaseAdmin.from('users').select('*');
 }`,
-    hardenedExplanation: 'Private keys stay strictly on the server; clients only receive verified, authorization-checked responses.',
+    hardenedExplanation: 'Administrative keys remain strictly in isolated server memory; public clients receive only authenticated, policy-filtered data.',
   },
   {
     id: 'sourcemaps',
-    title: 'Production Source Maps Leakage',
-    tag: 'Artifacts',
-    vulnerableLabel: 'Default Config (Vulnerable)',
-    vulnerableCode: `// ❌ next.config.mjs (Default or AI suggested)
+    title: 'Public Production Source Map Exposure',
+    tag: 'Build Artifacts',
+    vulnerableLabel: 'Permissive Build Configuration',
+    vulnerableCode: `// [SECURITY VULNERABILITY] next.config.mjs
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Exposes entire original source code, API routes,
-  // and developer comments publicly at .js.map!
+  // Exposes complete unminified TypeScript source code,
+  // proprietary logic, and internal API routes via .js.map endpoints:
   productionBrowserSourceMaps: true,
 };
 
 export default nextConfig;`,
-    vulnerableExplanation: 'Public source maps allow competitors and attackers to reconstruct your unminified frontend codebase.',
-    hardenedLabel: 'ShipSafe Hardened',
-    hardenedCode: `// ✅ next.config.mjs (Hardened for Production)
+    vulnerableExplanation: 'Publicly reachable .js.map files enable reverse engineering of your entire proprietary codebase, internal schemas, and developer comments.',
+    hardenedLabel: 'ShipSafe Hardened Architecture',
+    hardenedCode: `// [HARDENED IMPLEMENTATION] Production build hardening
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Strips all production source maps from client assets
+  // Strips all production source maps from publicly accessible assets
   productionBrowserSourceMaps: false,
   poweredByHeader: false,
   compress: true,
 };
 
 export default nextConfig;`,
-    hardenedExplanation: 'Minifies code and strips .map endpoints from public access while preserving private Sentry server-side error logging.',
+    hardenedExplanation: 'Completely strips source maps from public distribution while retaining private, authenticated server-side telemetry in monitoring services.',
   },
   {
     id: 'headers',
-    title: 'Content-Security-Policy & Anti-Clickjacking',
-    tag: 'Headers',
-    vulnerableLabel: 'Missing Headers (Vulnerable)',
-    vulnerableCode: `// ❌ No security headers configured in app
-// Browser defaults permit:
-// - Clickjacking via <iframe> embedding
-// - Insecure HTTP downgrade attacks
-// - Arbitrary third-party script injection (XSS)
-// - MIME-sniffing drive-by downloads`,
-    vulnerableExplanation: 'Default Next.js / Vite apps deploy with zero defense-in-depth headers unless explicitly configured.',
-    hardenedLabel: 'ShipSafe Hardened',
-    hardenedCode: `// ✅ next.config.mjs with Defense-in-Depth Headers
+    title: 'Absence of Defense-in-Depth HTTP Headers',
+    tag: 'Transport & Framing',
+    vulnerableLabel: 'Default Framework Configuration',
+    vulnerableCode: `// [SECURITY VULNERABILITY] No defense-in-depth security headers configured
+// Unconfigured HTTP response behavior permits:
+// 1. UI Redressing & Clickjacking attacks (iframe encapsulation)
+// 2. Protocol Downgrade attacks (lack of HSTS preload enforcement)
+// 3. Script injection and XSS execution (absence of Content-Security-Policy)
+// 4. MIME-type sniffing by malicious external assets`,
+    vulnerableExplanation: 'Default Next.js and Vite scaffolding deploy with zero defense-in-depth headers unless institutional security middleware is applied.',
+    hardenedLabel: 'ShipSafe Hardened Architecture',
+    hardenedCode: `// [HARDENED IMPLEMENTATION] next.config.mjs Security Headers
 const headers = [
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
@@ -102,7 +102,7 @@ const headers = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
   { key: 'Content-Security-Policy', value: "default-src 'self'; script-src 'self' 'unsafe-eval'; frame-ancestors 'none';" },
 ];`,
-    hardenedExplanation: 'Prevents clickjacking, enforces HTTPS preload, and restricts unauthorized script and frame injection.',
+    hardenedExplanation: 'Enforces anti-clickjacking, strict HTTPS preload, MIME conformance, and origin restrictions at the HTTP transport boundary.',
   },
 ];
 
@@ -123,13 +123,13 @@ export default function CodeDiffInspector() {
       <div className="text-center space-y-2 max-w-2xl mx-auto">
         <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300">
           <Code2 className="h-3.5 w-3.5 text-white" />
-          <span>Interactive Vulnerability Inspector</span>
+          <span>Vulnerability Analysis &amp; Hardening</span>
         </div>
         <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-          How AI-Built Apps Get Compromised
+          Common AI-Generated Architecture Vulnerabilities
         </h2>
         <p className="text-xs md:text-sm text-neutral-400">
-          Modern AI coding tools prioritize fast prototyping over defensive architecture. Click each scenario to compare the common vulnerability with the hardened pattern:
+          Rapid-prototyping tooling frequently optimizes for instantaneous execution over defensive design. Examine side-by-side comparative implementations:
         </p>
       </div>
 
@@ -179,7 +179,7 @@ export default function CodeDiffInspector() {
           </pre>
 
           <p className="text-xs text-neutral-400 leading-relaxed bg-red-500/[0.04] p-3 rounded-xl border border-red-500/10">
-            <span className="text-red-300 font-semibold">The Flaw: </span>
+            <span className="text-red-300 font-semibold">Vulnerability Vector: </span>
             {currentSample.vulnerableExplanation}
           </p>
         </div>
@@ -198,7 +198,7 @@ export default function CodeDiffInspector() {
               type="button"
               onClick={handleCopy}
               className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-white/[0.06] hover:bg-white/[0.12] text-xs font-mono text-neutral-200 transition-all border border-white/10"
-              title="Copy hardened code snippet"
+              title="Copy hardened implementation"
             >
               {copied ? (
                 <>
@@ -208,7 +208,7 @@ export default function CodeDiffInspector() {
               ) : (
                 <>
                   <Copy className="h-3 w-3 text-neutral-400" />
-                  <span className="text-[11px]">Copy Snippet</span>
+                  <span className="text-[11px]">Copy Pattern</span>
                 </>
               )}
             </button>
@@ -219,7 +219,7 @@ export default function CodeDiffInspector() {
           </pre>
 
           <p className="text-xs text-neutral-400 leading-relaxed bg-emerald-500/[0.04] p-3 rounded-xl border border-emerald-500/10">
-            <span className="text-emerald-300 font-semibold">The Fix: </span>
+            <span className="text-emerald-300 font-semibold">Hardening Pattern: </span>
             {currentSample.hardenedExplanation}
           </p>
         </div>
