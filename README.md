@@ -6,7 +6,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![OWASP](https://img.shields.io/badge/OWASP-Top%2010%20Mapped-orange?style=flat-square)](https://owasp.org/)
-[![Tests](https://img.shields.io/badge/Defensive%20Tests-83%20Passing-brightgreen?style=flat-square)]()
+[![Tests](https://img.shields.io/badge/Defensive%20Tests-92%20Passing-brightgreen?style=flat-square)]()
 
 ---
 
