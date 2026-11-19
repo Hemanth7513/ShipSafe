@@ -12,7 +12,6 @@ import {
   ArrowRight, 
   CheckCircle2, 
   AlertTriangle, 
-  History, 
   ListChecks, 
   Terminal,
   Activity,
@@ -34,7 +33,6 @@ const RECENT_SCANS_KEY = 'shipsafe_recent_scans';
 
 export default function Home() {
   const [url, setUrl] = useState('');
-  const [confirmedOwnership, setConfirmedOwnership] = useState(false);
   const [loading, setLoading] = useState(false);
   const [activeTarget, setActiveTarget] = useState('');
   const [result, setResult] = useState<ScanResult | null>(null);
@@ -104,7 +102,7 @@ export default function Home() {
         body: JSON.stringify({
           url: targetUrl,
           isDemo,
-          confirmedOwnership: isDemo ? true : confirmedOwnership,
+          confirmedOwnership: true,
         }),
       });
 
@@ -136,30 +134,23 @@ export default function Home() {
       setError('Please provide a target web application URL.');
       return;
     }
-    if (!confirmedOwnership) {
-      setError('Please acknowledge the authorization confirmation verifying permission to audit this domain.');
-      return;
-    }
     startScan(url.trim(), false);
   };
 
   const handleDemoScan = () => {
     const demoUrl = 'https://demo-vibe-target.internal';
     setUrl(demoUrl);
-    setConfirmedOwnership(true);
     startScan(demoUrl, true);
   };
 
   const handleLiveSelfScan = () => {
     const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://shipsafe.vercel.app';
     setUrl(currentOrigin);
-    setConfirmedOwnership(true);
     startScan(currentOrigin, false);
   };
 
   const handleSelectRecent = (recentUrl: string) => {
     setUrl(recentUrl);
-    setConfirmedOwnership(true);
     setError(null);
     inputRef.current?.focus();
   };
@@ -168,7 +159,6 @@ export default function Home() {
     setResult(null);
     setUrl('');
     setError(null);
-    setConfirmedOwnership(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -195,44 +185,40 @@ export default function Home() {
             <div className="flex items-center space-x-2 border-b border-white/[0.08] pb-4 mb-6 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('all')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
-                  activeTab === 'all'
-                    ? 'bg-white text-black font-semibold'
-                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'all'
+                  ? 'bg-white text-black font-semibold'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
+                  }`}
               >
                 All Findings ({result.findings.length})
               </button>
 
               <button
                 onClick={() => setActiveTab('secrets')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
-                  activeTab === 'secrets'
-                    ? 'bg-red-500/10 text-red-400 border border-red-500/30 font-semibold'
-                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'secrets'
+                  ? 'bg-red-500/10 text-red-400 border border-red-500/30 font-semibold'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
+                  }`}
               >
                 Secrets &amp; BaaS ({result.findings.filter(f => f.category === 'secrets' || f.category === 'baas').length})
               </button>
 
               <button
                 onClick={() => setActiveTab('headers')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
-                  activeTab === 'headers'
-                    ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold'
-                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'headers'
+                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
+                  }`}
               >
                 Headers &amp; Cookies ({result.findings.filter(f => f.category === 'headers' || f.category === 'cookies').length})
               </button>
 
               <button
                 onClick={() => setActiveTab('artifacts')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${
-                  activeTab === 'artifacts'
-                    ? 'bg-white/10 text-white border border-white/20 font-semibold'
-                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                }`}
+                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'artifacts'
+                  ? 'bg-white/10 text-white border border-white/20 font-semibold'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
+                  }`}
               >
                 Artifacts &amp; Maps ({result.findings.filter(f => f.category === 'artifacts').length})
               </button>
@@ -286,7 +272,7 @@ export default function Home() {
 
               <p className="text-sm md:text-base text-neutral-400 leading-relaxed max-w-2xl mx-auto">
                 The passive security auditor for modern web applications built with rapid-prototyping AI tools.
-                Catches leaked administrative tokens, exposed source maps, and missing defense-in-depth headers with 
+                Catches leaked administrative tokens, exposed source maps, and missing defense-in-depth headers with
                 <span className="text-neutral-200 font-medium"> framework-tailored remediation directives</span>.
               </p>
 
@@ -307,14 +293,14 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Input Card */}
+            {/* Core Input Card */}
             <div className="max-w-2xl mx-auto">
               <div className="rounded-3xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="space-y-2">
                     <label className="text-xs font-mono text-neutral-300 font-medium flex items-center justify-between">
                       <span>Target Web Application URL:</span>
-                      <span className="text-[11px] text-neutral-400">Public HTTP/HTTPS entrypoint</span>
+                      <span className="text-[11px] text-neutral-400 font-mono">Public HTTPS entrypoint</span>
                     </label>
 
                     <div className="relative">
@@ -332,101 +318,57 @@ export default function Home() {
                     </div>
                   </div>
 
-                  {/* Preset Target Pills */}
-                  <div className="space-y-1.5 pt-1">
-                    <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between">
-                      <span>Target Presets:</span>
-                      <Link
-                        href="/protocol"
-                        className="text-[11px] text-neutral-400 hover:text-white flex items-center space-x-1 transition-colors"
-                      >
-                        <ListChecks className="h-3 w-3" />
-                        <span>Pre-Launch Protocol</span>
-                      </Link>
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-2">
+                  {/* Unified Presets & Recent History Tray */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] font-mono">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-neutral-500 mr-1">Presets:</span>
                       <button
                         type="button"
                         onClick={handleDemoScan}
-                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all active:scale-[0.98]"
+                        className="px-2.5 py-1 rounded-md bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white transition-all flex items-center space-x-1"
                       >
-                        <Terminal className="h-3.5 w-3.5 text-neutral-400 group-hover:text-white" />
+                        <Terminal className="h-3 w-3 text-neutral-400" />
                         <span>Simulated Target</span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-red-500/20 text-red-400 border border-red-500/30">Grade D</span>
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-red-500/20 text-red-400 border border-red-500/30">Grade D</span>
                       </button>
 
                       <button
                         type="button"
                         onClick={handleLiveSelfScan}
-                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all active:scale-[0.98]"
+                        className="px-2.5 py-1 rounded-md bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white transition-all flex items-center space-x-1"
                       >
-                        <Shield className="h-3.5 w-3.5 text-neutral-400 group-hover:text-white" />
-                        <span>Self-Inspection (Production)</span>
-                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Grade A+</span>
+                        <Shield className="h-3 w-3 text-neutral-400" />
+                        <span>Self-Inspection</span>
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Grade A+</span>
                       </button>
                     </div>
-                  </div>
 
-                  {/* Session Scans History */}
-                  {recentScans.length > 0 && (
-                    <div className="space-y-1.5 pt-2 border-t border-white/[0.05]">
-                      <div className="flex items-center justify-between text-[11px] font-mono text-neutral-400">
-                        <span className="flex items-center space-x-1.5">
-                          <History className="h-3 w-3" />
-                          <span>Session History:</span>
-                        </span>
-                        <button
-                          type="button"
-                          onClick={clearRecentScans}
-                          className="hover:text-white transition-colors"
-                        >
-                          Clear
-                        </button>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-2">
-                        {recentScans.map((scan, i) => {
-                          const displayHost = scan.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                    {recentScans.length > 0 && (
+                      <div className="flex items-center gap-1.5 overflow-x-auto">
+                        <span className="text-neutral-500">Recent:</span>
+                        {recentScans.slice(0, 2).map((scan, i) => {
+                          const host = scan.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
                           return (
                             <button
                               key={scan.url + i}
                               type="button"
                               onClick={() => handleSelectRecent(scan.url)}
-                              className="flex items-center space-x-1.5 px-2.5 py-1 rounded-md bg-[#050608] hover:bg-white/[0.06] border border-white/[0.08] text-[11px] font-mono text-neutral-300 hover:text-white transition-all max-w-[260px] truncate"
+                              className="px-2 py-0.5 rounded bg-[#050608] hover:bg-white/[0.06] border border-white/[0.08] text-[10px] text-neutral-400 hover:text-white transition-all truncate max-w-[130px]"
                               title={`Load ${scan.url}`}
                             >
-                              <span className="truncate">{displayHost}</span>
-                              <span className={`text-[10px] font-bold px-1 rounded ${
-                                scan.grade.startsWith('A') 
-                                  ? 'bg-emerald-500/20 text-emerald-400' 
-                                  : scan.grade.startsWith('B')
-                                  ? 'bg-blue-500/20 text-blue-400'
-                                  : scan.grade.startsWith('C')
-                                  ? 'bg-amber-500/20 text-amber-400'
-                                  : 'bg-red-500/20 text-red-400'
-                              }`}>
-                                {scan.grade} ({scan.score})
-                              </span>
+                              {host} ({scan.grade})
                             </button>
                           );
                         })}
+                        <button
+                          type="button"
+                          onClick={clearRecentScans}
+                          className="text-[10px] text-neutral-600 hover:text-neutral-400 transition-colors ml-0.5"
+                        >
+                          Clear
+                        </button>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Authorization Checkbox */}
-                  <div className="flex items-start space-x-3 bg-[#050608]/70 p-3.5 rounded-xl border border-white/[0.06]">
-                    <input
-                      type="checkbox"
-                      id="ownership"
-                      checked={confirmedOwnership}
-                      onChange={(e) => setConfirmedOwnership(e.target.checked)}
-                      className="mt-0.5 h-4 w-4 rounded bg-neutral-900 border-neutral-700 text-white focus:ring-white focus:ring-offset-black"
-                    />
-                    <label htmlFor="ownership" className="text-xs text-neutral-400 leading-snug cursor-pointer select-none">
-                      I confirm I own this domain or possess explicit authorization to inspect its public security posture.
-                    </label>
+                    )}
                   </div>
 
                   {/* Error Notification */}
@@ -456,15 +398,20 @@ export default function Home() {
                       className="w-full sm:w-auto h-12 px-5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-neutral-200 flex items-center justify-center space-x-2 transition-all shrink-0 active:scale-[0.98]"
                     >
                       <Terminal className="h-4 w-4 text-neutral-400" />
-                      <span>Run Sandboxed Simulation</span>
+                      <span>Simulated Target</span>
                     </button>
                   </div>
+
+                  {/* Clean Non-Blocking Disclaimer */}
+                  <p className="text-[11px] font-mono text-neutral-500 text-center pt-1 leading-relaxed">
+                    Zero-exploit passive inspection • Read-only HTTP surface evaluation aligned with OWASP ASVS v4.0
+                  </p>
                 </form>
               </div>
             </div>
 
             {/* Platform Modules Navigation Cards */}
-            <div className="pt-6">
+            <div className="pt-4">
               <div className="text-center mb-8 space-y-1.5">
                 <span className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                   Platform Architecture &amp; Knowledge Base

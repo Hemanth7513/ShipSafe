@@ -1,6 +1,6 @@
 import dns from 'dns/promises';
 import net from 'net';
-import { SSRFValidationResult } from '@/lib/types/scanner';
+import { SSRFValidationResult } from '@/lib/types/scan';
 
 /**
  * Checks if an IPv4 address belongs to private, loopback, link-local,

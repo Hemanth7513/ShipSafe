@@ -1,10 +1,12 @@
 import { 
   calculateShannonEntropy, 
-  maskSecret, 
-  isPlaceholder,
   extractCandidateTokens,
   hasCryptographicCharacterSet
-} from '../src/lib/scanner/entropy/shannon';
+} from '../src/lib/scanner/utils/entropy';
+import { 
+  maskSecret, 
+  isPlaceholder 
+} from '../src/lib/scanner/utils/redact';
 
 function runEntropyTests() {
   console.log('🧪 Starting Shannon Entropy & Masking Defensive Test Suite...\n');

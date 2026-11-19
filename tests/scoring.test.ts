@@ -1,5 +1,5 @@
 import { calculateScoreAndGrade, generateMarkdownReport } from '../src/lib/scanner/scoring/engine';
-import { Finding, ScanResult } from '../src/lib/types/scanner';
+import { Finding, ScanResult } from '../src/lib/types/scan';
 
 function runScoringTests() {
   console.log('🧪 Starting Scoring Engine & Report Generator Test Suite...\n');

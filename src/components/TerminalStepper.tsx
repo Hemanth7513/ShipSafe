@@ -25,7 +25,7 @@ export default function TerminalStepper({ targetUrl }: TerminalStepperProps) {
         if (prev < STEPS.length - 1) return prev + 1;
         return prev;
       });
-    }, 450);
+    }, 240);
 
     return () => clearInterval(interval);
   }, []);
