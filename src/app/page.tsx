@@ -5,25 +5,22 @@ import Header from '@/components/Header';
 import TerminalStepper from '@/components/TerminalStepper';
 import ScoreCard from '@/components/ScoreCard';
 import FindingCard from '@/components/FindingCard';
-import ChecklistModal from '@/components/ChecklistModal';
-import CodeDiffInspector from '@/components/CodeDiffInspector';
-import FaqSection from '@/components/FaqSection';
-import FloatingNav from '@/components/FloatingNav';
+import Link from 'next/link';
 import { ScanResult, FindingCategory } from '@/lib/types/scan';
 import { 
   Shield, 
   ArrowRight, 
   CheckCircle2, 
   AlertTriangle, 
-  Eye, 
-  ShieldAlert, 
-  Cpu, 
   History, 
   ListChecks, 
   Terminal,
   Activity,
   Check,
-  SearchCode
+  SearchCode,
+  Code2,
+  Cpu,
+  HelpCircle
 } from 'lucide-react';
 
 interface RecentScan {
@@ -43,7 +40,6 @@ export default function Home() {
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | FindingCategory>('all');
-  const [checklistOpen, setChecklistOpen] = useState(false);
   const [recentScans, setRecentScans] = useState<RecentScan[]>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -176,14 +172,6 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const scrollToInput = () => {
-    if (result) {
-      handleReset();
-    }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setTimeout(() => inputRef.current?.focus(), 300);
-  };
-
   const filteredFindings = result?.findings.filter((f) => {
     if (activeTab === 'all') return true;
     if (activeTab === 'secrets') return f.category === 'secrets' || f.category === 'baas';
@@ -195,17 +183,7 @@ export default function Home() {
       {/* Top Ambient Spotlight Glow */}
       <div className="pointer-events-none absolute -top-36 left-1/2 -translate-x-1/2 w-[750px] h-[350px] bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-transparent rounded-full blur-3xl z-0" />
 
-      <Header onOpenChecklist={() => setChecklistOpen(true)} />
-
-      {/* Floating Quick Action Pill for Surfing Users */}
-      <FloatingNav
-        onScrollToTop={scrollToInput}
-        onRunDemo={handleDemoScan}
-        onOpenChecklist={() => setChecklistOpen(true)}
-      />
-
-      {/* Checklist Modal */}
-      <ChecklistModal isOpen={checklistOpen} onClose={() => setChecklistOpen(false)} />
+      <Header />
 
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 md:py-14 z-10">
         {/* State 1: Scan Results Available */}
@@ -290,8 +268,8 @@ export default function Home() {
             <TerminalStepper targetUrl={activeTarget} />
           </div>
         ) : (
-          /* State 3: Hero Landing & Interactive Surfing Page */
-          <div className="space-y-20">
+          /* State 3: Focused Hero Landing & Auditor Engine */
+          <div className="space-y-16">
             {/* Hero Header */}
             <div className="text-center space-y-5 max-w-3xl mx-auto pt-6">
               <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 shadow-sm">
@@ -358,14 +336,13 @@ export default function Home() {
                   <div className="space-y-1.5 pt-1">
                     <div className="text-[11px] font-mono text-neutral-400 flex items-center justify-between">
                       <span>Target Presets:</span>
-                      <button
-                        type="button"
-                        onClick={() => setChecklistOpen(true)}
+                      <Link
+                        href="/protocol"
                         className="text-[11px] text-neutral-400 hover:text-white flex items-center space-x-1 transition-colors"
                       >
                         <ListChecks className="h-3 w-3" />
-                        <span>Pre-Launch Checklist</span>
-                      </button>
+                        <span>Pre-Launch Protocol</span>
+                      </Link>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
@@ -486,82 +463,107 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Pre-Launch Readiness Callout Card */}
-            <div className="max-w-2xl mx-auto">
-              <div 
-                onClick={() => setChecklistOpen(true)}
-                className="cursor-pointer group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/60 hover:bg-[#0B0D11] hover:border-white/20 p-4 transition-all flex items-center justify-between gap-4 backdrop-blur-xl"
-              >
-                <div className="flex items-center space-x-3.5">
-                  <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white shrink-0 group-hover:scale-105 transition-transform">
-                    <ListChecks className="h-4 w-4 text-white" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white group-hover:text-white transition-colors">
-                      Pre-Launch Security Hygiene Protocol
-                    </h4>
-                    <p className="text-[11px] text-neutral-400">
-                      7 critical deployment verifications (BaaS RLS, CSP, Source Map Stripping, Rate Limiting)
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-1 text-xs font-mono text-neutral-400 group-hover:text-white transition-colors shrink-0">
-                  <span>Open Protocol</span>
-                  <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </div>
-              </div>
-            </div>
-
-            {/* Interactive Before & After Vulnerability Inspector */}
-            <CodeDiffInspector />
-
-            {/* Architecture Highlights Section */}
-            <div>
-              <div className="text-center mb-10 space-y-2">
+            {/* Platform Modules Navigation Cards */}
+            <div className="pt-6">
+              <div className="text-center mb-8 space-y-1.5">
                 <span className="text-xs font-mono uppercase tracking-wider text-neutral-400">
-                  Engineering Architecture
+                  Platform Architecture &amp; Knowledge Base
                 </span>
-                <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-                  Zero False-Positive Pipeline &amp; RFC 6890 SSRF Guard
+                <h2 className="text-2xl font-bold text-white tracking-tight">
+                  Modular Security Suite
                 </h2>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-[#0B0D11]/70 border border-white/[0.08] rounded-2xl p-6 space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] hover:border-white/20 transition-all">
-                  <div className="h-10 w-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white">
-                    <Cpu className="h-5 w-5" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Module 1: Vulnerabilities */}
+                <Link
+                  href="/vulnerabilities"
+                  className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
+                >
+                  <div className="space-y-2.5">
+                    <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <Code2 className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
+                      Vulnerabilities Lab
+                    </h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      Comparative code diffs illustrating leaked BaaS keys, exposed source maps, and absent headers.
+                    </p>
                   </div>
-                  <h3 className="text-base font-bold text-white">BaaS Claims Disambiguation</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    Decodes client JWT claims in memory to distinguish between intended public Supabase <code className="text-neutral-200">anon</code> tokens and critical <code className="text-red-400">service_role</code> bypass keys.
-                  </p>
-                </div>
+                  <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
+                    <span>Inspect Diffs</span>
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
 
-                <div className="bg-[#0B0D11]/70 border border-white/[0.08] rounded-2xl p-6 space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] hover:border-white/20 transition-all">
-                  <div className="h-10 w-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white">
-                    <ShieldAlert className="h-5 w-5" />
+                {/* Module 2: Architecture */}
+                <Link
+                  href="/architecture"
+                  className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
+                >
+                  <div className="space-y-2.5">
+                    <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <Cpu className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
+                      System Architecture
+                    </h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      RFC 6890 SSRF boundaries, anti-DNS rebinding, Shannon entropy, and SPA signature detection.
+                    </p>
                   </div>
-                  <h3 className="text-base font-bold text-white">SSRF &amp; Anti-DNS Rebinding</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    Resolves DNS and blocks all RFC 1918 private subnets, cloud metadata (169.254.169.254), and loopback IPs on <span className="text-white">every single redirect hop</span>.
-                  </p>
-                </div>
+                  <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
+                    <span>View Architecture</span>
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
 
-                <div className="bg-[#0B0D11]/70 border border-white/[0.08] rounded-2xl p-6 space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] hover:border-white/20 transition-all">
-                  <div className="h-10 w-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white">
-                    <Eye className="h-5 w-5" />
+                {/* Module 3: Protocol */}
+                <Link
+                  href="/protocol"
+                  className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
+                >
+                  <div className="space-y-2.5">
+                    <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <ListChecks className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
+                      Pre-Launch Protocol
+                    </h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      7-checkpoint hygiene verification covering BaaS RLS, CSP headers, prefix isolation, and rate limiting.
+                    </p>
                   </div>
-                  <h3 className="text-base font-bold text-white">SPA Catch-All Elimination</h3>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    Validates content signatures and MIME types on <code className="text-neutral-200">/.env</code> and <code className="text-neutral-200">.js.map</code> rather than naive 200 status codes, preventing SPA 404 false alarms.
-                  </p>
-                </div>
+                  <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
+                    <span>Open Protocol</span>
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                {/* Module 4: FAQ */}
+                <Link
+                  href="/faq"
+                  className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
+                >
+                  <div className="space-y-2.5">
+                    <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <HelpCircle className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
+                      Documentation &amp; FAQ
+                    </h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      Zero-payload non-destructive guarantees, ephemeral memory architecture, and ASVS benchmarks.
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
+                    <span>Read Docs</span>
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
               </div>
             </div>
-
-            {/* Interactive FAQ Section */}
-            <FaqSection />
           </div>
         )}
       </main>
@@ -573,15 +575,11 @@ export default function Home() {
             <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
             <span>ShipSafe v1.0 • Passive Security Hygiene Auditor</span>
           </div>
-          <span>Mapped to OWASP Top 10 (2021) &amp; OWASP ASVS v4.0</span>
-          <div className="flex items-center space-x-4 text-neutral-400">
-            <button 
-              type="button" 
-              onClick={scrollToInput} 
-              className="hover:text-white transition-colors"
-            >
-              Top ↑
-            </button>
+          <div className="flex items-center space-x-6 text-neutral-400">
+            <Link href="/vulnerabilities" className="hover:text-white transition-colors">Vulnerabilities</Link>
+            <Link href="/architecture" className="hover:text-white transition-colors">Architecture</Link>
+            <Link href="/protocol" className="hover:text-white transition-colors">Protocol</Link>
+            <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
           </div>
         </div>
       </footer>
