@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import TerminalStepper from '@/components/TerminalStepper';
 import ScoreCard from '@/components/ScoreCard';
 import FindingCard from '@/components/FindingCard';
 import ChecklistModal from '@/components/ChecklistModal';
+import CodeDiffInspector from '@/components/CodeDiffInspector';
+import FaqSection from '@/components/FaqSection';
+import FloatingNav from '@/components/FloatingNav';
 import { ScanResult, FindingCategory } from '@/lib/types/scan';
 import { 
   Shield, 
@@ -18,7 +21,9 @@ import {
   Cpu, 
   History, 
   ListChecks, 
-  Zap 
+  Zap,
+  Activity,
+  Check
 } from 'lucide-react';
 
 interface RecentScan {
@@ -41,6 +46,8 @@ export default function Home() {
   const [checklistOpen, setChecklistOpen] = useState(false);
   const [recentScans, setRecentScans] = useState<RecentScan[]>([]);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     try {
       const stored = localStorage.getItem(RECENT_SCANS_KEY);
@@ -50,6 +57,23 @@ export default function Home() {
     } catch {
       // ignore JSON storage errors
     }
+  }, []);
+
+  // Global Keyboard Shortcut listener for '/' and 'Cmd/Ctrl + K'
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const isInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '');
+      if (e.key === '/' && !isInput) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const saveToRecentScans = (newScan: RecentScan) => {
@@ -141,6 +165,7 @@ export default function Home() {
     setUrl(recentUrl);
     setConfirmedOwnership(true);
     setError(null);
+    inputRef.current?.focus();
   };
 
   const handleReset = () => {
@@ -148,6 +173,15 @@ export default function Home() {
     setUrl('');
     setError(null);
     setConfirmedOwnership(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToInput = () => {
+    if (result) {
+      handleReset();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => inputRef.current?.focus(), 300);
   };
 
   const filteredFindings = result?.findings.filter((f) => {
@@ -157,13 +191,23 @@ export default function Home() {
   }) || [];
 
   return (
-    <div className="min-h-screen bg-black text-neutral-100 flex flex-col selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-black text-neutral-100 flex flex-col selection:bg-white selection:text-black relative overflow-x-hidden">
+      {/* Top Ambient Spotlight Glow */}
+      <div className="pointer-events-none absolute -top-36 left-1/2 -translate-x-1/2 w-[750px] h-[350px] bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-transparent rounded-full blur-3xl z-0" />
+
       <Header onOpenChecklist={() => setChecklistOpen(true)} />
+
+      {/* Floating Quick Action Pill for Surfing Users */}
+      <FloatingNav
+        onScrollToTop={scrollToInput}
+        onRunDemo={handleDemoScan}
+        onOpenChecklist={() => setChecklistOpen(true)}
+      />
 
       {/* Checklist Modal */}
       <ChecklistModal isOpen={checklistOpen} onClose={() => setChecklistOpen(false)} />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 md:py-14">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 md:py-14 z-10">
         {/* State 1: Scan Results Available */}
         {result ? (
           <div>
@@ -235,8 +279,9 @@ export default function Home() {
           /* State 2: Active Scanning with Terminal Logs */
           <div className="py-12">
             <div className="text-center mb-6 space-y-2">
-              <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.06] text-neutral-300 border border-white/10">
-                Passive Inspection Running
+              <span className="text-xs font-mono px-3 py-1 rounded-full bg-white/[0.06] text-neutral-300 border border-white/10 inline-flex items-center space-x-2">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Passive Inspection Running</span>
               </span>
               <h2 className="text-2xl font-bold text-white tracking-tight">
                 Auditing {activeTarget}
@@ -245,8 +290,8 @@ export default function Home() {
             <TerminalStepper targetUrl={activeTarget} />
           </div>
         ) : (
-          /* State 3: Hero Landing & Scan Form */
-          <div className="space-y-16">
+          /* State 3: Hero Landing & Interactive Surfing Page */
+          <div className="space-y-20">
             {/* Hero Header */}
             <div className="text-center space-y-5 max-w-3xl mx-auto pt-6">
               <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 shadow-sm">
@@ -266,6 +311,22 @@ export default function Home() {
                 Catches leaked Supabase admin keys, exposed source maps, and missing headers with 
                 <span className="text-neutral-200 font-medium"> framework-aware copy-paste AI prompts</span>.
               </p>
+
+              {/* Trust Metric Badges */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                  <Check className="h-3 w-3 text-emerald-400" />
+                  <span>100% Passive (0 Payloads)</span>
+                </span>
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                  <Activity className="h-3 w-3 text-neutral-300" />
+                  <span>&lt;10s Execution</span>
+                </span>
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                  <Shield className="h-3 w-3 text-neutral-300" />
+                  <span>OWASP Top 10 Mapped</span>
+                </span>
+              </div>
             </div>
 
             {/* Input Card */}
@@ -280,12 +341,16 @@ export default function Home() {
 
                     <div className="relative">
                       <input
+                        ref={inputRef}
                         type="text"
                         value={url}
                         onChange={(e) => setUrl(e.target.value)}
                         placeholder="https://myapp.vercel.app or myapp.com"
-                        className="w-full h-13 px-4 py-3.5 rounded-xl bg-[#050608] border border-white/10 focus:border-white focus:ring-1 focus:ring-white/20 text-sm text-white placeholder-neutral-600 transition-all font-mono outline-none shadow-inner"
+                        className="w-full h-13 px-4 py-3.5 pr-20 rounded-xl bg-[#050608] border border-white/10 focus:border-white focus:ring-1 focus:ring-white/20 text-sm text-white placeholder-neutral-600 transition-all font-mono outline-none shadow-inner"
                       />
+                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-400 bg-white/[0.05] border border-white/10 px-2 py-0.5 rounded pointer-events-none hidden sm:inline">
+                        Press /
+                      </span>
                     </div>
                   </div>
 
@@ -307,7 +372,7 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={handleDemoScan}
-                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all"
+                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all active:scale-[0.98]"
                       >
                         <Zap className="h-3.5 w-3.5 text-amber-400" />
                         <span>Seeded Demo</span>
@@ -317,7 +382,7 @@ export default function Home() {
                       <button
                         type="button"
                         onClick={handleLiveSelfScan}
-                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all"
+                        className="group flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-xs font-mono text-neutral-300 hover:text-white transition-all active:scale-[0.98]"
                       >
                         <Shield className="h-3.5 w-3.5 text-emerald-400" />
                         <span>ShipSafe Live</span>
@@ -448,13 +513,16 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Interactive Before & After Vulnerability Inspector */}
+            <CodeDiffInspector />
+
             {/* Architecture Highlights Section */}
-            <div className="pt-4">
+            <div>
               <div className="text-center mb-10 space-y-2">
                 <span className="text-xs font-mono uppercase tracking-wider text-neutral-400">
                   Engineering Architecture
                 </span>
-                <h2 className="text-2xl font-bold text-white tracking-tight">
+                <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
                   Zero False Positives &amp; Strict SSRF Guard
                 </h2>
               </div>
@@ -491,15 +559,30 @@ export default function Home() {
                 </div>
               </div>
             </div>
+
+            {/* Interactive FAQ Section */}
+            <FaqSection />
           </div>
         )}
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-white/[0.08] bg-black py-6 mt-16 text-center text-xs text-neutral-400 font-mono">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>ShipSafe v1.0 • Passive Security Hygiene Auditor</span>
+      <footer className="w-full border-t border-white/[0.08] bg-black py-8 mt-20 text-center text-xs text-neutral-400 font-mono z-10">
+        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center space-x-2">
+            <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
+            <span>ShipSafe v1.0 • Passive Security Hygiene Auditor</span>
+          </div>
           <span>Mapped to OWASP Top 10 (2021) &amp; OWASP ASVS v4.0</span>
+          <div className="flex items-center space-x-4 text-neutral-400">
+            <button 
+              type="button" 
+              onClick={scrollToInput} 
+              className="hover:text-white transition-colors"
+            >
+              Back to Top ↑
+            </button>
+          </div>
         </div>
       </footer>
     </div>
