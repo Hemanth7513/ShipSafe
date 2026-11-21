@@ -10,7 +10,10 @@ import {
   RotateCcw, 
   ShieldCheck, 
   Shield, 
-  AlertCircle 
+  AlertCircle,
+  Copy,
+  Check,
+  CheckCheck
 } from 'lucide-react';
 
 interface ChecklistItem {
@@ -85,6 +88,8 @@ const STORAGE_KEY = 'shipsafe_launch_checklist';
 
 export default function ProtocolPage() {
   const [checkedIds, setCheckedIds] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -112,6 +117,16 @@ export default function ProtocolPage() {
     }
   };
 
+  const handleVerifyAll = () => {
+    const allIds = CHECKLIST_ITEMS.map(i => i.id);
+    setCheckedIds(allIds);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(allIds));
+    } catch {
+      // ignore
+    }
+  };
+
   const handleReset = () => {
     setCheckedIds([]);
     try {
@@ -121,9 +136,35 @@ export default function ProtocolPage() {
     }
   };
 
+  const handleCopyAttestation = () => {
+    const lines = [
+      '# ShipSafe Pre-Launch Security Attestation Report',
+      `*Generated on: ${new Date().toISOString()}*`,
+      `*Status: ${checkedIds.length} of ${CHECKLIST_ITEMS.length} verified (${Math.round((checkedIds.length / CHECKLIST_ITEMS.length) * 100)}%)*`,
+      '',
+      '### Checkpoint Status:',
+      ...CHECKLIST_ITEMS.map(item => {
+        const mark = checkedIds.includes(item.id) ? '[x]' : '[ ]';
+        return `- ${mark} **${item.title}** (${item.owasp})\n  Category: ${item.category}\n  Directive: ${item.recommendation}`;
+      }),
+      '',
+      '---',
+      '*Verified with ShipSafe Passive Security Hygiene Auditor*'
+    ];
+    navigator.clipboard.writeText(lines.join('\n'));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const total = CHECKLIST_ITEMS.length;
   const completed = checkedIds.length;
   const percentage = Math.round((completed / total) * 100);
+
+  const categories = ['all', ...Array.from(new Set(CHECKLIST_ITEMS.map(i => i.category)))];
+
+  const filteredItems = selectedCategory === 'all'
+    ? CHECKLIST_ITEMS
+    : CHECKLIST_ITEMS.filter(i => i.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-black text-neutral-100 flex flex-col selection:bg-white selection:text-black relative overflow-x-hidden">
@@ -163,8 +204,8 @@ export default function ProtocolPage() {
         </div>
 
         {/* Progress Tracker Card */}
-        <div className="rounded-3xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-6 md:p-8 space-y-4 shadow-xl">
-          <div className="flex items-center justify-between">
+        <div className="rounded-3xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-6 md:p-8 space-y-5 shadow-xl">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center space-x-3">
               <div className="h-10 w-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white">
                 <ShieldCheck className="h-5 w-5" />
@@ -179,16 +220,37 @@ export default function ProtocolPage() {
               </div>
             </div>
 
-            {completed > 0 && (
+            <div className="flex items-center space-x-2">
               <button
                 type="button"
-                onClick={handleReset}
-                className="text-xs font-mono text-neutral-400 hover:text-white flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/[0.05] transition-all"
+                onClick={handleCopyAttestation}
+                className="text-xs font-mono text-neutral-300 hover:text-white flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] transition-all"
+                title="Copy attestation checklist for Pull Requests or audits"
               >
-                <RotateCcw className="h-3.5 w-3.5" />
-                <span>Reset Progress</span>
+                {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+                <span>{copied ? 'Copied Attestation' : 'Copy Attestation'}</span>
               </button>
-            )}
+
+              <button
+                type="button"
+                onClick={handleVerifyAll}
+                className="text-xs font-mono text-neutral-300 hover:text-white flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] transition-all"
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                <span>Verify All</span>
+              </button>
+
+              {completed > 0 && (
+                <button
+                  type="button"
+                  onClick={handleReset}
+                  className="text-xs font-mono text-neutral-400 hover:text-white flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-white/10 hover:bg-white/[0.05] transition-all"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Reset</span>
+                </button>
+              )}
+            </div>
           </div>
 
           <div className="h-2.5 w-full bg-[#050608] rounded-full overflow-hidden border border-white/[0.06]">
@@ -205,9 +267,27 @@ export default function ProtocolPage() {
           </div>
         </div>
 
+        {/* Category Filter Pills */}
+        <div className="flex items-center space-x-1.5 overflow-x-auto pb-1">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-3 py-1 rounded-xl text-xs font-mono transition-all capitalize shrink-0 ${
+                selectedCategory === cat
+                  ? 'bg-white text-black font-semibold'
+                  : 'bg-white/[0.03] text-neutral-400 hover:text-white hover:bg-white/[0.06] border border-white/[0.06]'
+              }`}
+            >
+              {cat === 'all' ? `All (${total})` : cat}
+            </button>
+          ))}
+        </div>
+
         {/* Interactive Checklist Cards */}
         <div className="space-y-3.5">
-          {CHECKLIST_ITEMS.map((item) => {
+          {filteredItems.map((item) => {
             const isChecked = mounted && checkedIds.includes(item.id);
             return (
               <div

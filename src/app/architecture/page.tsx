@@ -2,6 +2,8 @@
 
 import React from 'react';
 import Header from '@/components/Header';
+import SsrfPlayground from '@/components/SsrfPlayground';
+import ScoringSimulator from '@/components/ScoringSimulator';
 import Link from 'next/link';
 import { 
   ArrowLeft, 
@@ -90,6 +92,9 @@ export default function ArchitecturePage() {
           </p>
         </div>
 
+        {/* Live SSRF Sandbox Playground */}
+        <SsrfPlayground />
+
         {/* Pillars Grid */}
         <div className="space-y-6">
           {ARCH_PILLARS.map((pillar, i) => {
@@ -133,6 +138,9 @@ export default function ArchitecturePage() {
             );
           })}
         </div>
+
+        {/* Live Scoring Model Simulator */}
+        <ScoringSimulator />
 
         {/* Scoring Engine Breakdown */}
         <div className="rounded-3xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-6 md:p-8 space-y-4 shadow-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">

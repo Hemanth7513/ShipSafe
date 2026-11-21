@@ -19,7 +19,8 @@ import {
   SearchCode,
   Code2,
   Cpu,
-  HelpCircle
+  HelpCircle,
+  Sparkles
 } from 'lucide-react';
 
 interface RecentScan {
@@ -37,6 +38,7 @@ export default function Home() {
   const [activeTarget, setActiveTarget] = useState('');
   const [result, setResult] = useState<ScanResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [demoNotice, setDemoNotice] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'all' | FindingCategory>('all');
   const [recentScans, setRecentScans] = useState<RecentScan[]>([]);
 
@@ -131,27 +133,34 @@ export default function Home() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!url.trim()) {
-      setError('Please provide a target web application URL.');
+      const demoUrl = 'https://demo-vibe-target.internal';
+      setUrl(demoUrl);
+      setDemoNotice('No custom URL entered — executing live simulated audit against Simulated Target.');
+      startScan(demoUrl, true);
       return;
     }
+    setDemoNotice(null);
     startScan(url.trim(), false);
   };
 
   const handleDemoScan = () => {
     const demoUrl = 'https://demo-vibe-target.internal';
     setUrl(demoUrl);
+    setDemoNotice(null);
     startScan(demoUrl, true);
   };
 
   const handleLiveSelfScan = () => {
-    const currentOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://shipsafe.vercel.app';
-    setUrl(currentOrigin);
-    startScan(currentOrigin, false);
+    const selfUrl = 'https://shipsafe.internal/self-inspection';
+    setUrl(selfUrl);
+    setDemoNotice(null);
+    startScan(selfUrl, false);
   };
 
   const handleSelectRecent = (recentUrl: string) => {
     setUrl(recentUrl);
     setError(null);
+    setDemoNotice(null);
     inputRef.current?.focus();
   };
 
@@ -159,6 +168,7 @@ export default function Home() {
     setResult(null);
     setUrl('');
     setError(null);
+    setDemoNotice(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -278,6 +288,10 @@ export default function Home() {
 
               {/* Trust Metric Badges */}
               <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-300 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-sm">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span>Engine Online • In-Memory Analyzer Ready</span>
+                </span>
                 <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
                   <Check className="h-3 w-3 text-emerald-400" />
                   <span>100% Passive (Zero Payloads)</span>
@@ -370,6 +384,14 @@ export default function Home() {
                       </div>
                     )}
                   </div>
+
+                  {/* Demo Information Banner */}
+                  {demoNotice && (
+                    <div className="p-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 flex items-center space-x-2">
+                      <Sparkles className="h-4 w-4 text-emerald-400 shrink-0" />
+                      <span>{demoNotice}</span>
+                    </div>
+                  )}
 
                   {/* Error Notification */}
                   {error && (

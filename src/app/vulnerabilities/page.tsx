@@ -3,6 +3,7 @@
 import React from 'react';
 import Header from '@/components/Header';
 import CodeDiffInspector from '@/components/CodeDiffInspector';
+import JwtDisambiguator from '@/components/JwtDisambiguator';
 import Link from 'next/link';
 import { ArrowLeft, Shield } from 'lucide-react';
 
@@ -29,6 +30,9 @@ export default function VulnerabilitiesPage() {
             Vulnerability Analysis Lab
           </span>
         </div>
+
+        {/* Live In-Memory JWT Disambiguator */}
+        <JwtDisambiguator />
 
         {/* Interactive Code Diff Inspector */}
         <CodeDiffInspector />
