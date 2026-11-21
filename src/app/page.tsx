@@ -6,6 +6,7 @@ import TerminalStepper from '@/components/TerminalStepper';
 import ScoreCard from '@/components/ScoreCard';
 import FindingCard from '@/components/FindingCard';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ScanResult, FindingCategory } from '@/lib/types/scan';
 import { 
   Shield, 
@@ -188,67 +189,75 @@ export default function Home() {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 md:py-14 z-10">
         {/* State 1: Scan Results Available */}
         {result ? (
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          >
             <ScoreCard result={result} onReset={handleReset} />
 
-            {/* Filter Tabs */}
-            <div className="flex items-center space-x-2 border-b border-white/[0.08] pb-4 mb-6 overflow-x-auto">
-              <button
-                onClick={() => setActiveTab('all')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'all'
-                  ? 'bg-white text-black font-semibold'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                  }`}
-              >
-                All Findings ({result.findings.length})
-              </button>
-
-              <button
-                onClick={() => setActiveTab('secrets')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'secrets'
-                  ? 'bg-red-500/10 text-red-400 border border-red-500/30 font-semibold'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                  }`}
-              >
-                Secrets &amp; BaaS ({result.findings.filter(f => f.category === 'secrets' || f.category === 'baas').length})
-              </button>
-
-              <button
-                onClick={() => setActiveTab('headers')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'headers'
-                  ? 'bg-amber-500/10 text-amber-400 border border-amber-500/30 font-semibold'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                  }`}
-              >
-                Headers &amp; Cookies ({result.findings.filter(f => f.category === 'headers' || f.category === 'cookies').length})
-              </button>
-
-              <button
-                onClick={() => setActiveTab('artifacts')}
-                className={`px-4 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === 'artifacts'
-                  ? 'bg-white/10 text-white border border-white/20 font-semibold'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/[0.05]'
-                  }`}
-              >
-                Artifacts &amp; Maps ({result.findings.filter(f => f.category === 'artifacts').length})
-              </button>
+            {/* Filter Tabs with Framer Spring Pill */}
+            <div className="flex items-center space-x-1.5 border-b border-white/[0.08] pb-4 mb-6 overflow-x-auto relative">
+              {[
+                { id: 'all', label: `All Findings (${result.findings.length})` },
+                { id: 'secrets', label: `Secrets & BaaS (${result.findings.filter(f => f.category === 'secrets' || f.category === 'baas').length})` },
+                { id: 'headers', label: `Headers & Cookies (${result.findings.filter(f => f.category === 'headers' || f.category === 'cookies').length})` },
+                { id: 'artifacts', label: `Artifacts & Maps (${result.findings.filter(f => f.category === 'artifacts').length})` },
+              ].map((tab) => {
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as 'all' | FindingCategory)}
+                    className={`relative px-4 py-2 rounded-xl text-xs font-mono transition-colors shrink-0 ${
+                      isActive ? 'text-black font-bold' : 'text-neutral-400 hover:text-white'
+                    }`}
+                  >
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeFilterPill"
+                        transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                        className="absolute inset-0 bg-white rounded-xl shadow-md"
+                      />
+                    )}
+                    <span className="relative z-10">{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Findings List */}
-            {filteredFindings.length > 0 ? (
-              <div className="space-y-4">
-                {filteredFindings.map((finding, idx) => (
-                  <FindingCard key={finding.id + idx} finding={finding} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-16 bg-[#0B0D11]/60 rounded-3xl border border-white/[0.06]">
-                <CheckCircle2 className="h-10 w-10 text-emerald-400 mx-auto mb-3" />
-                <h3 className="text-base font-semibold text-white">Zero Hygiene Gaps Identified</h3>
-                <p className="text-xs text-neutral-400 mt-1">This inspection category satisfied all defensive verification rules.</p>
-              </div>
-            )}
-          </div>
+            {/* Findings List with Smooth Transitions */}
+            <AnimatePresence mode="popLayout">
+              {filteredFindings.length > 0 ? (
+                <motion.div 
+                  layout
+                  className="space-y-4"
+                >
+                  {filteredFindings.map((finding, idx) => (
+                    <motion.div
+                      key={finding.id + idx}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.25, delay: idx * 0.04 }}
+                    >
+                      <FindingCard finding={finding} />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-16 bg-[#0B0D11]/60 rounded-3xl border border-white/[0.06]"
+                >
+                  <CheckCircle2 className="h-10 w-10 text-emerald-400 mx-auto mb-3" />
+                  <h3 className="text-base font-semibold text-white">Zero Hygiene Gaps Identified</h3>
+                  <p className="text-xs text-neutral-400 mt-1">This inspection category satisfied all defensive verification rules.</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
         ) : loading ? (
           /* State 2: Active Scanning with Terminal Logs */
           <div className="py-12">
@@ -265,7 +274,12 @@ export default function Home() {
           </div>
         ) : (
           /* State 3: Focused Hero Landing & Auditor Engine */
-          <div className="space-y-16">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.45 }}
+            className="space-y-16"
+          >
             {/* Hero Header */}
             <div className="text-center space-y-5 max-w-3xl mx-auto pt-6">
               <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 shadow-sm">
@@ -533,7 +547,7 @@ export default function Home() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         )}
       </main>
 

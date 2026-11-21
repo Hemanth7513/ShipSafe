@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Terminal, Menu, X, Shield } from 'lucide-react';
+import { motion } from 'framer-motion';
 import Logo from './Logo';
 
 const NAV_ITEMS = [
@@ -19,28 +20,35 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="w-full border-b border-white/[0.08] bg-black/80 backdrop-blur-2xl sticky top-0 z-50">
+    <header className="w-full border-b border-white/[0.08] bg-black/80 backdrop-blur-2xl sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Left: Brand Logo */}
         <Link href="/" className="hover:opacity-90 transition-opacity shrink-0">
           <Logo size="md" />
         </Link>
 
-        {/* Center: Desktop Navigation Bar */}
-        <nav className="hidden md:flex items-center space-x-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+        {/* Center: Desktop Navigation Bar with Framer Spring Pill */}
+        <nav className="hidden md:flex items-center space-x-1 p-1 rounded-xl bg-white/[0.03] border border-white/[0.06] relative">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all ${
+                className={`relative px-3.5 py-1.5 rounded-lg text-xs font-mono transition-colors ${
                   isActive
-                    ? 'bg-white text-black font-semibold shadow-sm'
-                    : 'text-neutral-400 hover:text-white hover:bg-white/[0.04]'
+                    ? 'text-black font-semibold'
+                    : 'text-neutral-400 hover:text-white'
                 }`}
               >
-                {item.label}
+                {isActive && (
+                  <motion.div
+                    layoutId="navbar-active-pill"
+                    transition={{ type: 'spring', stiffness: 400, damping: 32 }}
+                    className="absolute inset-0 bg-white rounded-lg shadow-sm"
+                  />
+                )}
+                <span className="relative z-10">{item.label}</span>
               </Link>
             );
           })}

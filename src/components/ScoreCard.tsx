@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { ScanResult, LetterGrade } from '@/lib/types/scan';
 import { generateMarkdownReport } from '@/lib/scanner/scoring/engine';
 import { Copy, Check, RotateCcw } from 'lucide-react';
@@ -62,12 +63,20 @@ export default function ScoreCard({ result, onReset }: ScoreCardProps) {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto mb-10">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className="w-full max-w-5xl mx-auto mb-10"
+    >
       <div className="rounded-3xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
           {/* Left: Grade & Score */}
           <div className="flex items-center space-x-6">
-            <div
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 350, damping: 25 }}
               className={`h-28 w-28 rounded-2xl flex flex-col items-center justify-center border ${gradeStyle.border} ${gradeStyle.bg} transition-all`}
             >
               <span className={`text-5xl font-black font-mono tracking-tight ${gradeStyle.text}`}>
@@ -76,7 +85,7 @@ export default function ScoreCard({ result, onReset }: ScoreCardProps) {
               <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 mt-1">
                 Score {result.overallScore}/100
               </span>
-            </div>
+            </motion.div>
 
             <div className="space-y-1.5">
               <div className="flex items-center space-x-2">
@@ -102,9 +111,10 @@ export default function ScoreCard({ result, onReset }: ScoreCardProps) {
 
           {/* Right: Actions */}
           <div className="flex items-center space-x-3 w-full lg:w-auto justify-end">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.98 }}
               onClick={handleCopyMarkdown}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-xs font-medium text-neutral-200 transition-all shadow-sm active:scale-[0.98]"
+              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-xs font-medium text-neutral-200 transition-all shadow-sm"
             >
               {copied ? (
                 <>
@@ -117,15 +127,16 @@ export default function ScoreCard({ result, onReset }: ScoreCardProps) {
                   <span>Export Markdown</span>
                 </>
               )}
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.98 }}
               onClick={onReset}
-              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black text-xs font-semibold transition-all shadow-md active:scale-[0.98]"
+              className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white hover:bg-neutral-200 text-black text-xs font-semibold transition-all shadow-md"
             >
               <RotateCcw className="h-4 w-4" />
               <span>New Audit</span>
-            </button>
+            </motion.button>
           </div>
         </div>
 
@@ -167,6 +178,6 @@ export default function ScoreCard({ result, onReset }: ScoreCardProps) {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

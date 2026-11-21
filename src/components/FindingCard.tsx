@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Finding, FindingSeverity } from '@/lib/types/scan';
 import { 
   getTailoredAiPrompt, 
@@ -59,7 +60,7 @@ function getSeverityBadge(severity: FindingSeverity) {
   }
 }
 
-export default function FindingCard({ finding }: FindingCardProps) {
+export default function FindingCard({ finding, index = 0 }: FindingCardProps) {
   const [copiedPrompt, setCopiedPrompt] = useState(false);
   const [expandedPrompt, setExpandedPrompt] = useState(false);
   const [framework, setFramework] = useState<SupportedFramework>('nextjs');
@@ -76,7 +77,12 @@ export default function FindingCard({ finding }: FindingCardProps) {
   };
 
   return (
-    <div className="w-full rounded-2xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-xl p-5 md:p-6 shadow-lg hover:border-white/20 transition-all space-y-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.4), ease: [0.22, 1, 0.36, 1] }}
+      className="w-full rounded-2xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-xl p-5 md:p-6 shadow-lg hover:border-white/20 transition-all space-y-4 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)]"
+    >
       {/* Top Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center space-x-2.5">
@@ -212,12 +218,22 @@ export default function FindingCard({ finding }: FindingCardProps) {
         </div>
 
         {/* Expanded Prompt Preview */}
-        {expandedPrompt && (
-          <div className="mt-2.5 p-3.5 bg-[#050608] rounded-xl border border-white/[0.08] font-mono text-xs text-neutral-300 whitespace-pre-wrap leading-relaxed animate-fadeIn">
-            {currentPrompt}
-          </div>
-        )}
+        <AnimatePresence>
+          {expandedPrompt && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="mt-2.5 p-3.5 bg-[#050608] rounded-xl border border-white/[0.08] font-mono text-xs text-neutral-300 whitespace-pre-wrap leading-relaxed">
+                {currentPrompt}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-    </div>
+    </motion.div>
   );
 }
