@@ -275,7 +275,7 @@ export default function Home() {
         ) : (
           /* State 3: Focused Hero Landing & Auditor Engine */
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.45 }}
             className="space-y-16"
