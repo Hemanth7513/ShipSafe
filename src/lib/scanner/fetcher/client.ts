@@ -90,24 +90,5 @@ export async function safeFetch(
   throw new Error(`Exceeded maximum redirect limit (${maxRedirects}).`);
 }
 
-/**
- * Detects frontend framework based on HTML signatures and script paths.
- */
-export function detectFramework(html: string, scriptUrls: string[]): string {
-  if (html.includes('id="__NEXT_DATA__"') || scriptUrls.some(s => s.includes('/_next/'))) {
-    return 'Next.js';
-  }
-  if (html.includes('window.__remixContext') || scriptUrls.some(s => s.includes('/build/entry.client-'))) {
-    return 'Remix';
-  }
-  if (html.includes('__NUXT__') || scriptUrls.some(s => s.includes('/_nuxt/'))) {
-    return 'Nuxt';
-  }
-  if (html.includes('id="root"') && scriptUrls.some(s => s.includes('/assets/index-') || s.includes('@vite/client'))) {
-    return 'Vite';
-  }
-  return 'Generic Web App';
-}
-
-// Re-export master orchestrator
-export { runPassiveAudit as executePassiveScan } from '../orchestrator';
+// Re-export framework detection & master orchestrator
+export { detectFramework, runPassiveAudit as executePassiveScan } from '../orchestrator';

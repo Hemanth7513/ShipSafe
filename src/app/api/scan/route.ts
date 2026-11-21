@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { runPassiveAudit } from '@/lib/scanner/orchestrator';
 import { calculateScoreAndGrade } from '@/lib/scanner/scoring/engine';
-import { checkRateLimit } from '@/lib/security/rate-limit';
+import { checkRateLimit, getClientIp } from '@/lib/security/rate-limit';
 import { validateScanRequest } from '@/lib/security/validate';
 import { Finding, ScanResult } from '@/lib/types/scan';
 
@@ -180,21 +180,39 @@ export async function POST(req: NextRequest) {
 
     const lowerUrl = (url || '').toLowerCase().trim();
 
-    // 1. Instant Safe Demo Mode
-    if (isDemo || lowerUrl === 'demo' || lowerUrl.includes('demo') || lowerUrl.includes('demo-target') || lowerUrl.includes('demo-vibe-target')) {
+    // Safely parse host and path to prevent substring false-positives
+    let targetHost = '';
+    let targetPath = '';
+    try {
+      const parsed = new URL(lowerUrl.startsWith('http://') || lowerUrl.startsWith('https://') ? lowerUrl : `https://${lowerUrl}`);
+      targetHost = parsed.hostname;
+      targetPath = parsed.pathname;
+    } catch {
+      targetHost = lowerUrl;
+    }
+
+    // 1. Instant Safe Demo Mode - strictly match explicit flag or designated demo hostnames
+    const isExplicitDemo =
+      Boolean(isDemo) ||
+      lowerUrl === 'demo' ||
+      targetHost === 'demo-vibe-target.internal' ||
+      targetHost === 'demo-target' ||
+      targetHost === 'demo.internal';
+
+    if (isExplicitDemo) {
       await new Promise(r => setTimeout(r, 600));
       return NextResponse.json(getDemoTargetScanResult());
     }
 
-    // 2. Safe Self-Inspection Mode (Local dev or self-test)
-    if (
+    // 2. Safe Self-Inspection Mode - strictly match 'self' keyword or explicit shipsafe self hostnames
+    const isExplicitSelf =
       lowerUrl === 'self' ||
-      lowerUrl.includes('self-inspection') ||
-      lowerUrl.includes('shipsafe.internal') ||
-      lowerUrl.includes('shipsafe.dev') ||
-      lowerUrl.includes('localhost') ||
-      lowerUrl.includes('127.0.0.1')
-    ) {
+      targetHost === 'shipsafe.internal' ||
+      targetHost === 'shipsafe.dev' ||
+      (targetHost === 'localhost' && targetPath.includes('self-inspection')) ||
+      (targetHost === '127.0.0.1' && targetPath.includes('self-inspection'));
+
+    if (isExplicitSelf) {
       await new Promise(r => setTimeout(r, 700));
       return NextResponse.json(getSelfScanResult());
     }
@@ -208,8 +226,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 3. Enforce Rate Limiting
-    const clientIp = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    // 4. Enforce Rate Limiting using robust client IP extraction
+    const clientIp = getClientIp(req);
     const rateLimit = checkRateLimit(clientIp);
     if (!rateLimit.allowed) {
       return NextResponse.json(
@@ -226,7 +244,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // 4. Run full passive audit via master orchestrator
+    // 5. Run full passive audit via master orchestrator
     const result = await runPassiveAudit(validation.normalizedUrl, {
       perRequestTimeoutMs: 5000,
       maxScripts: 15,

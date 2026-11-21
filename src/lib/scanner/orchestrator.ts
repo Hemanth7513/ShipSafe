@@ -12,10 +12,12 @@ export interface OrchestratorOptions {
   maxScripts?: number;
   maxTotalBytes?: number;
   perRequestTimeoutMs?: number;
+  concurrency?: number;
 }
 
 const DEFAULT_MAX_SCRIPTS = 15;
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024; // 5 MB
+const DEFAULT_CONCURRENCY = 4;
 
 export function detectFramework(html: string, scriptUrls: string[]): string {
   if (html.includes('id="__NEXT_DATA__"') || scriptUrls.some(s => s.includes('/_next/'))) {
@@ -34,7 +36,7 @@ export function detectFramework(html: string, scriptUrls: string[]): string {
 }
 
 /**
- * Pipeline runner: Orchestrates the passive security audit across all modules.
+ * Pipeline runner: Orchestrates the passive security audit across all modules with batch parallelization.
  */
 export async function runPassiveAudit(
   targetUrl: string,
@@ -47,6 +49,7 @@ export async function runPassiveAudit(
 
   const maxScripts = options.maxScripts ?? DEFAULT_MAX_SCRIPTS;
   const maxBytes = options.maxTotalBytes ?? DEFAULT_MAX_BYTES;
+  const concurrency = options.concurrency ?? DEFAULT_CONCURRENCY;
 
   // Step 1: Initial SSRF check on target URL
   options.onProgress?.({
@@ -120,7 +123,7 @@ export async function runPassiveAudit(
 
   const frameworkDetected = detectFramework(rootFetch.body, discoveredScriptUrls);
 
-  // Step 4: Download & Inspect JavaScript Bundles
+  // Step 4: Download & Inspect JavaScript Bundles with concurrency batching
   options.onProgress?.({
     step: 'analyzing_secrets',
     message: `Inspecting ${Math.min(discoveredScriptUrls.length, maxScripts)} client script bundles for secrets and source maps...`,
@@ -131,44 +134,52 @@ export async function runPassiveAudit(
   const scriptSlice = discoveredScriptUrls.slice(0, maxScripts);
   const sourceMapUrlsToCheck: string[] = [];
 
-  for (const scriptUrl of scriptSlice) {
+  for (let i = 0; i < scriptSlice.length; i += concurrency) {
     if (totalBytes >= maxBytes) break;
 
-    try {
-      const scriptRes = await safeFetch(scriptUrl, options.perRequestTimeoutMs);
-      const scriptBytes = Buffer.byteLength(scriptRes.body, 'utf8');
-      totalBytes += scriptBytes;
+    const batch = scriptSlice.slice(i, i + concurrency);
+    const batchResults = await Promise.allSettled(
+      batch.map(url => safeFetch(url, options.perRequestTimeoutMs))
+    );
 
-      scannedAssets.push({
-        url: scriptUrl,
-        sizeBytes: scriptBytes,
-        type: 'script',
-        status: scriptRes.status
-      });
+    for (let j = 0; j < batch.length; j++) {
+      if (totalBytes >= maxBytes) break;
+      const result = batchResults[j];
+      const scriptUrl = batch[j];
 
-      // Run Module 2: Secrets & BaaS Disambiguation
-      const secretFindings = scanSourceForSecrets(scriptRes.body, scriptUrl);
-      findings.push(...secretFindings);
+      if (result.status === 'fulfilled') {
+        const scriptRes = result.value;
+        const scriptBytes = Buffer.byteLength(scriptRes.body, 'utf8');
+        totalBytes += scriptBytes;
 
-      // Check for source map reference in the script
-      const mapMatch = scriptRes.body.match(/\/\/#\s*sourceMappingURL=([^\s]+)/);
-      if (mapMatch && mapMatch[1]) {
-        try {
-          const mapFullUrl = new URL(mapMatch[1], scriptUrl).toString();
-          if (!sourceMapUrlsToCheck.includes(mapFullUrl)) {
-            sourceMapUrlsToCheck.push(mapFullUrl);
+        scannedAssets.push({
+          url: scriptUrl,
+          sizeBytes: scriptBytes,
+          type: 'script',
+          status: scriptRes.status
+        });
+
+        // Run Module 2: Secrets & BaaS Disambiguation
+        const secretFindings = scanSourceForSecrets(scriptRes.body, scriptUrl);
+        findings.push(...secretFindings);
+
+        // Check for source map reference in the script
+        const mapMatch = scriptRes.body.match(/\/\/#\s*sourceMappingURL=([^\s]+)/);
+        if (mapMatch && mapMatch[1]) {
+          try {
+            const mapFullUrl = new URL(mapMatch[1], scriptUrl).toString();
+            if (!sourceMapUrlsToCheck.includes(mapFullUrl)) {
+              sourceMapUrlsToCheck.push(mapFullUrl);
+            }
+          } catch {
+            // Ignore invalid map url
           }
-        } catch {
-          // Ignore invalid map url
         }
       }
-
-    } catch {
-      // Individual script fetch failure should not abort scan
     }
   }
 
-  // Step 5: Check Build Artifacts & Source Maps
+  // Step 5: Check Build Artifacts & Source Maps in parallel
   options.onProgress?.({
     step: 'verifying_artifacts',
     message: 'Checking for exposed production artifacts (.env, .git, source maps)...',
@@ -178,45 +189,56 @@ export async function runPassiveAudit(
 
   const artifactPaths = ['/.env', '/.git/config', '/swagger.json'];
   const baseOrigin = targetParsedUrl.origin;
+  const artifactUrls = artifactPaths.map(path => `${baseOrigin}${path}`);
 
-  for (const path of artifactPaths) {
-    if (totalBytes >= maxBytes) break;
+  if (totalBytes < maxBytes) {
+    const artifactResults = await Promise.allSettled(
+      artifactUrls.map(url => safeFetch(url, options.perRequestTimeoutMs))
+    );
 
-    const checkUrl = `${baseOrigin}${path}`;
-    try {
-      const artRes = await safeFetch(checkUrl, options.perRequestTimeoutMs);
-      const artBytes = Buffer.byteLength(artRes.body, 'utf8');
-      totalBytes += artBytes;
+    for (let i = 0; i < artifactUrls.length; i++) {
+      const checkUrl = artifactUrls[i];
+      const res = artifactResults[i];
 
-      const contentType = typeof artRes.headers['content-type'] === 'string'
-        ? artRes.headers['content-type']
-        : undefined;
+      if (res.status === 'fulfilled') {
+        const artRes = res.value;
+        const artBytes = Buffer.byteLength(artRes.body, 'utf8');
+        totalBytes += artBytes;
 
-      const artFinding = analyzeArtifactResponse(checkUrl, artRes.status, artRes.body, contentType);
-      if (artFinding) {
-        findings.push(artFinding);
+        const contentType = typeof artRes.headers['content-type'] === 'string'
+          ? artRes.headers['content-type']
+          : undefined;
+
+        const artFinding = analyzeArtifactResponse(checkUrl, artRes.status, artRes.body, contentType);
+        if (artFinding) {
+          findings.push(artFinding);
+        }
       }
-    } catch {
-      // Path check failure is normal
     }
   }
 
-  // Check discovered source maps
-  for (const mapUrl of sourceMapUrlsToCheck.slice(0, 3)) {
-    if (totalBytes >= maxBytes) break;
+  // Check discovered source maps in parallel
+  const mapsToCheck = sourceMapUrlsToCheck.slice(0, 3);
+  if (mapsToCheck.length > 0 && totalBytes < maxBytes) {
+    const mapResults = await Promise.allSettled(
+      mapsToCheck.map(mapUrl => safeFetch(mapUrl, options.perRequestTimeoutMs))
+    );
 
-    try {
-      const mapRes = await safeFetch(mapUrl, options.perRequestTimeoutMs);
-      const contentType = typeof mapRes.headers['content-type'] === 'string'
-        ? mapRes.headers['content-type']
-        : undefined;
+    for (let i = 0; i < mapsToCheck.length; i++) {
+      const mapUrl = mapsToCheck[i];
+      const res = mapResults[i];
 
-      const mapFinding = analyzeArtifactResponse(mapUrl, mapRes.status, mapRes.body, contentType);
-      if (mapFinding) {
-        findings.push(mapFinding);
+      if (res.status === 'fulfilled') {
+        const mapRes = res.value;
+        const contentType = typeof mapRes.headers['content-type'] === 'string'
+          ? mapRes.headers['content-type']
+          : undefined;
+
+        const mapFinding = analyzeArtifactResponse(mapUrl, mapRes.status, mapRes.body, contentType);
+        if (mapFinding) {
+          findings.push(mapFinding);
+        }
       }
-    } catch {
-      // Map check failure is normal
     }
   }
 
