@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Terminal, Menu, X, Shield } from 'lucide-react';
+import { Menu, X, Shield } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Logo from './Logo';
 

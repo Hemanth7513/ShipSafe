@@ -13,7 +13,6 @@ import {
   ArrowRight, 
   CheckCircle2, 
   AlertTriangle, 
-  Terminal,
   Globe,
   Cpu,
   Sparkles,
