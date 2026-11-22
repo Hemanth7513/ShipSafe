@@ -201,7 +201,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-neutral-100 flex flex-col selection:bg-white selection:text-black relative overflow-x-hidden">
       {/* Top Ambient Spotlight Glow */}
-      <div className="pointer-events-none absolute -top-36 left-1/2 -translate-x-1/2 w-[750px] h-[350px] bg-gradient-to-b from-white/[0.08] via-white/[0.02] to-transparent rounded-full blur-3xl z-0" />
+      <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[400px] bg-gradient-to-b from-white/[0.12] via-white/[0.03] to-transparent rounded-full blur-3xl z-0" />
 
       <Header />
 
@@ -306,7 +306,7 @@ export default function Home() {
                 <span>Zero-Exploit Passive Security Hygiene Assessment</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent leading-tight">
                 Ship Fast. Audit Faster.
               </h1>
 
@@ -317,7 +317,7 @@ export default function Home() {
 
             {/* Core Input Card - Compact & Above The Fold */}
             <div className="max-w-2xl mx-auto">
-              <div className="rounded-2xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-5 sm:p-6 shadow-2xl relative overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+              <div className="rounded-2xl border border-white/15 bg-[#0A0C10] p-5 sm:p-6 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.9),inset_0_1px_0_0_rgba(255,255,255,0.12)] relative overflow-hidden backdrop-blur-2xl">
                 <form onSubmit={handleSubmit} className="space-y-3.5">
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs font-mono text-neutral-300">
@@ -333,7 +333,7 @@ export default function Home() {
                           value={url}
                           onChange={(e) => setUrl(e.target.value)}
                           placeholder="https://your-app.com or localhost:3000"
-                          className="w-full h-12 px-4 pr-16 rounded-xl bg-[#050608] border border-white/15 focus:border-white focus:ring-1 focus:ring-white/20 text-xs sm:text-sm text-white placeholder-neutral-600 transition-all font-mono outline-none shadow-inner"
+                          className="w-full h-12 px-4 pr-16 rounded-xl bg-[#030406] border border-white/15 focus:border-white focus:ring-1 focus:ring-white/25 text-xs sm:text-sm text-white placeholder-neutral-500 transition-all font-mono outline-none shadow-inner"
                         />
                         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-500 bg-white/[0.04] border border-white/10 px-1.5 py-0.5 rounded pointer-events-none hidden sm:inline">
                           /
@@ -432,17 +432,17 @@ export default function Home() {
                 </form>
               </div>
 
-              {/* Capability Metrics Badges (Monochrome & Compact) */}
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
-                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-neutral-300"></span>
+              {/* Capability Metrics Badges (Monochrome & Polished) */}
+              <div className="flex flex-wrap items-center justify-center gap-2.5 pt-3">
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-300 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-white"></span>
                   <span>98 Automated Defensive Heuristics</span>
                 </span>
-                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-300 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-sm">
                   <Check className="h-3 w-3 text-neutral-300" />
                   <span>In-Memory Zero-Storage Execution</span>
                 </span>
-                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-300 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-sm">
                   <Shield className="h-3 w-3 text-neutral-300" />
                   <span>OWASP ASVS v4.0 Aligned</span>
                 </span>
