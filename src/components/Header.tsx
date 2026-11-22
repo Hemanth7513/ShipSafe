@@ -9,10 +9,8 @@ import Logo from './Logo';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Auditor' },
-  { href: '/vulnerabilities', label: 'Vulnerabilities' },
+  { href: '/vulnerabilities', label: 'Core Checks' },
   { href: '/architecture', label: 'Architecture' },
-  { href: '/protocol', label: 'Protocol' },
-  { href: '/faq', label: 'FAQ' },
 ];
 
 export default function Header() {

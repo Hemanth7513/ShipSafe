@@ -13,14 +13,13 @@ import {
   ArrowRight, 
   CheckCircle2, 
   AlertTriangle, 
-  ListChecks, 
   Terminal,
   Check,
   SearchCode,
-  Code2,
   Cpu,
-  HelpCircle,
-  Sparkles
+  Sparkles,
+  Bot,
+  FileCode
 } from 'lucide-react';
 
 interface RecentScan {
@@ -450,43 +449,24 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Platform Modules Navigation Cards */}
-            <div className="pt-4">
-              <div className="text-center mb-8 space-y-1.5">
+            {/* The 4 Core Pillars */}
+            <div className="pt-2">
+              <div className="text-center mb-6 space-y-1.5">
                 <span className="text-xs font-mono uppercase tracking-wider text-neutral-400">
-                  Platform Architecture &amp; Knowledge Base
+                  Focused Security Engine
                 </span>
-                <h2 className="text-2xl font-bold text-white tracking-tight">
-                  Modular Security Suite
+                <h2 className="text-xl md:text-2xl font-bold text-white tracking-tight">
+                  The 4 Core Pillars of ShipSafe
                 </h2>
+                <p className="text-xs text-neutral-400 max-w-lg mx-auto">
+                  Engineered specifically for modern web applications to catch what rapid-prototyping AI tools miss.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Module 1: Vulnerabilities */}
+                {/* Pillar 1: BaaS & Secret Leak Hunter */}
                 <Link
                   href="/vulnerabilities"
-                  className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
-                >
-                  <div className="space-y-2.5">
-                    <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <Code2 className="h-4 w-4" />
-                    </div>
-                    <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
-                      Vulnerabilities Lab
-                    </h3>
-                    <p className="text-xs text-neutral-400 leading-relaxed">
-                      Comparative code diffs illustrating leaked BaaS keys, exposed source maps, and absent headers.
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>Inspect Diffs</span>
-                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </Link>
-
-                {/* Module 2: Architecture */}
-                <Link
-                  href="/architecture"
                   className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
                 >
                   <div className="space-y-2.5">
@@ -494,58 +474,80 @@ export default function Home() {
                       <Cpu className="h-4 w-4" />
                     </div>
                     <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
-                      System Architecture
+                      1. BaaS & Secret Hunter
                     </h3>
                     <p className="text-xs text-neutral-400 leading-relaxed">
-                      RFC 6890 SSRF boundaries, anti-DNS rebinding, Shannon entropy, and SPA signature detection.
+                      Decodes Supabase/Firebase JWTs in memory: permits public <code className="text-neutral-300">anon</code> keys with zero false alarms while isolating critical <code className="text-neutral-300">service_role</code> bypasses.
                     </p>
                   </div>
                   <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>View Architecture</span>
+                    <span>Inspect Claims Lab</span>
                     <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
 
-                {/* Module 3: Protocol */}
+                {/* Pillar 2: Source Map & Build Exposure */}
                 <Link
-                  href="/protocol"
+                  href="/vulnerabilities"
                   className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
                 >
                   <div className="space-y-2.5">
                     <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <ListChecks className="h-4 w-4" />
+                      <FileCode className="h-4 w-4" />
                     </div>
                     <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
-                      Pre-Launch Protocol
+                      2. Build & Source Maps
                     </h3>
                     <p className="text-xs text-neutral-400 leading-relaxed">
-                      7-checkpoint hygiene verification covering BaaS RLS, CSP headers, prefix isolation, and rate limiting.
+                      Strips unminified <code className="text-neutral-300">.js.map</code> code exposures. Structural MIME signatures eliminate SPA 200 OK wildcard HTML false alarms on <code className="text-neutral-300">/.env</code> and <code className="text-neutral-300">/.git</code>.
                     </p>
                   </div>
                   <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>Open Protocol</span>
+                    <span>Inspect Artifact Diffs</span>
                     <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
 
-                {/* Module 4: FAQ */}
+                {/* Pillar 3: Headers & Cookie Hygiene */}
                 <Link
-                  href="/faq"
+                  href="/architecture"
                   className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
                 >
                   <div className="space-y-2.5">
                     <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <HelpCircle className="h-4 w-4" />
+                      <Shield className="h-4 w-4" />
                     </div>
                     <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
-                      Documentation &amp; FAQ
+                      3. Headers & Cookies
                     </h3>
                     <p className="text-xs text-neutral-400 leading-relaxed">
-                      Zero-payload non-destructive guarantees, ephemeral memory architecture, and ASVS benchmarks.
+                      Instant evaluation of Content-Security-Policy, HSTS preload, X-Frame-Options (clickjacking), and authentication cookie security flags.
                     </p>
                   </div>
                   <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>Read Docs</span>
+                    <span>View Security Specs</span>
+                    <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </Link>
+
+                {/* Pillar 4: 1-Click AI Fix Prompts */}
+                <Link
+                  href="/vulnerabilities"
+                  className="group rounded-2xl border border-white/[0.08] bg-[#0B0D11]/70 hover:bg-[#0B0D11] hover:border-white/20 p-5 transition-all space-y-3 backdrop-blur-xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06)] flex flex-col justify-between"
+                >
+                  <div className="space-y-2.5">
+                    <div className="h-9 w-9 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
+                      <Bot className="h-4 w-4" />
+                    </div>
+                    <h3 className="text-sm font-bold text-white group-hover:text-white transition-colors">
+                      4. 1-Click AI Fix Prompts
+                    </h3>
+                    <p className="text-xs text-neutral-400 leading-relaxed">
+                      Instant, copy-paste remediation prompts tailored for Next.js, Vite, Express, or Remix to fix findings immediately with Cursor or Claude.
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-1 text-[11px] font-mono text-neutral-400 group-hover:text-white pt-2 border-t border-white/[0.04]">
+                    <span>Preview AI Prompts</span>
                     <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </Link>
@@ -563,10 +565,10 @@ export default function Home() {
             <span>ShipSafe v1.0 • Passive Security Hygiene Auditor</span>
           </div>
           <div className="flex items-center space-x-6 text-neutral-400">
-            <Link href="/vulnerabilities" className="hover:text-white transition-colors">Vulnerabilities</Link>
+            <Link href="/" className="hover:text-white transition-colors">Auditor</Link>
+            <Link href="/vulnerabilities" className="hover:text-white transition-colors">Core Checks</Link>
             <Link href="/architecture" className="hover:text-white transition-colors">Architecture</Link>
-            <Link href="/protocol" className="hover:text-white transition-colors">Protocol</Link>
-            <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
+            <Link href="/demo-target" className="hover:text-white transition-colors">Sandbox</Link>
           </div>
         </div>
       </footer>
