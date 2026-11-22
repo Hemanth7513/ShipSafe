@@ -15,7 +15,6 @@ import {
   AlertTriangle, 
   ListChecks, 
   Terminal,
-  Activity,
   Check,
   SearchCode,
   Code2,
@@ -58,6 +57,17 @@ export default function Home() {
 
   // Global Keyboard Shortcut listener for '/' and 'Cmd/Ctrl + K'
   useEffect(() => {
+    // Check pending reset from cross-page navigation
+    if (typeof window !== 'undefined' && sessionStorage.getItem('shipsafe_pending_reset') === 'true') {
+      sessionStorage.removeItem('shipsafe_pending_reset');
+      handleReset();
+    }
+
+    const onResetEvent = () => {
+      handleReset();
+    };
+    window.addEventListener('shipsafe:reset', onResetEvent);
+
     const handleKeyDown = (e: KeyboardEvent) => {
       const isInput = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName || '');
       if (e.key === '/' && !isInput) {
@@ -70,7 +80,10 @@ export default function Home() {
       }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('shipsafe:reset', onResetEvent);
+    };
   }, []);
 
   const saveToRecentScans = (newScan: RecentScan) => {
@@ -158,6 +171,13 @@ export default function Home() {
     startScan(selfUrl, false);
   };
 
+  const handleLocalhostScan = () => {
+    const localUrl = 'http://localhost:3000';
+    setUrl(localUrl);
+    setDemoNotice(null);
+    startScan(localUrl, false);
+  };
+
   const handleSelectRecent = (recentUrl: string) => {
     setUrl(recentUrl);
     setError(null);
@@ -186,7 +206,7 @@ export default function Home() {
 
       <Header />
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 md:py-14 z-10">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-5 md:py-8 z-10">
         {/* State 1: Scan Results Available */}
         {result ? (
           <motion.div
@@ -278,78 +298,65 @@ export default function Home() {
             initial={false}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.45 }}
-            className="space-y-16"
+            className="space-y-8 md:space-y-10"
           >
-            {/* Hero Header */}
-            <div className="text-center space-y-5 max-w-3xl mx-auto pt-6">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 shadow-sm">
+            {/* Hero Header - Ultra Compact & Above The Fold */}
+            <div className="text-center space-y-2.5 max-w-2xl mx-auto pt-2">
+              <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300">
                 <SearchCode className="h-3.5 w-3.5 text-white" />
                 <span>Zero-Exploit Passive Security Hygiene Assessment</span>
               </div>
 
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white leading-tight">
-                Ship Fast. Audit Faster. <br />
-                <span className="text-neutral-400 font-semibold">
-                  Ship Safe.
-                </span>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                Ship Fast. Audit Faster.
               </h1>
 
-              <p className="text-sm md:text-base text-neutral-400 leading-relaxed max-w-2xl mx-auto">
-                The passive security auditor for modern web applications built with rapid-prototyping AI tools.
-                Catches leaked administrative tokens, exposed source maps, and missing defense-in-depth headers with
-                <span className="text-neutral-200 font-medium"> framework-tailored remediation directives</span>.
+              <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-lg mx-auto">
+                Passive security hygiene auditing for modern web applications. Zero backend data retention.
               </p>
-
-              {/* Trust Metric Badges */}
-              <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-300 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-sm">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                  <span>Engine Online • In-Memory Analyzer Ready</span>
-                </span>
-                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
-                  <Check className="h-3 w-3 text-emerald-400" />
-                  <span>100% Passive (Zero Payloads)</span>
-                </span>
-                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
-                  <Activity className="h-3 w-3 text-neutral-300" />
-                  <span>&lt;10s Runtime Execution</span>
-                </span>
-                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
-                  <Shield className="h-3 w-3 text-neutral-300" />
-                  <span>OWASP ASVS v4.0 Aligned</span>
-                </span>
-              </div>
             </div>
 
-            {/* Core Input Card */}
+            {/* Core Input Card - Compact & Above The Fold */}
             <div className="max-w-2xl mx-auto">
-              <div className="rounded-3xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <label className="text-xs font-mono text-neutral-300 font-medium flex items-center justify-between">
+              <div className="rounded-2xl border border-white/10 bg-[#0B0D11]/90 backdrop-blur-2xl p-5 sm:p-6 shadow-2xl relative overflow-hidden shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)]">
+                <form onSubmit={handleSubmit} className="space-y-3.5">
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-xs font-mono text-neutral-300">
                       <span>Target Web Application URL:</span>
-                      <span className="text-[11px] text-neutral-400 font-mono">Public HTTPS entrypoint</span>
-                    </label>
+                      <span className="text-[11px] text-neutral-500 hidden sm:inline">Public HTTPS or dev entrypoint</span>
+                    </div>
 
-                    <div className="relative">
-                      <input
-                        ref={inputRef}
-                        type="text"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        placeholder="https://app.example.com or example.com"
-                        className="w-full h-13 px-4 py-3.5 pr-20 rounded-xl bg-[#050608] border border-white/10 focus:border-white focus:ring-1 focus:ring-white/20 text-sm text-white placeholder-neutral-600 transition-all font-mono outline-none shadow-inner"
-                      />
-                      <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-400 bg-white/[0.05] border border-white/10 px-2 py-0.5 rounded pointer-events-none hidden sm:inline">
-                        Press /
-                      </span>
+                    <div className="relative flex flex-col sm:flex-row gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          ref={inputRef}
+                          type="text"
+                          value={url}
+                          onChange={(e) => setUrl(e.target.value)}
+                          placeholder="https://your-app.com or localhost:3000"
+                          className="w-full h-12 px-4 pr-16 rounded-xl bg-[#050608] border border-white/15 focus:border-white focus:ring-1 focus:ring-white/20 text-xs sm:text-sm text-white placeholder-neutral-600 transition-all font-mono outline-none shadow-inner"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-500 bg-white/[0.04] border border-white/10 px-1.5 py-0.5 rounded pointer-events-none hidden sm:inline">
+                          /
+                        </span>
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="h-12 px-5 rounded-xl bg-white hover:bg-neutral-200 text-black font-semibold text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-md active:scale-[0.98] shrink-0"
+                      >
+                        <Shield className="h-4 w-4" />
+                        <span>Audit Target</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
 
-                  {/* Unified Presets & Recent History Tray */}
-                  <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-[11px] font-mono">
+                  {/* Unified Presets & Quick Targets */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5 text-[11px] font-mono">
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-neutral-500 mr-1">Presets:</span>
+                      <span className="text-neutral-500 mr-0.5">Presets:</span>
                       <button
                         type="button"
                         onClick={handleDemoScan}
@@ -357,7 +364,7 @@ export default function Home() {
                       >
                         <Terminal className="h-3 w-3 text-neutral-400" />
                         <span>Simulated Target</span>
-                        <span className="text-[9px] px-1 py-0.2 rounded bg-red-500/20 text-red-400 border border-red-500/30">Grade D</span>
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-neutral-800 text-neutral-300 border border-white/10">Grade D</span>
                       </button>
 
                       <button
@@ -367,7 +374,16 @@ export default function Home() {
                       >
                         <Shield className="h-3 w-3 text-neutral-400" />
                         <span>Self-Inspection</span>
-                        <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Grade A+</span>
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-neutral-800 text-neutral-300 border border-white/10">Grade A+</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={handleLocalhostScan}
+                        className="px-2.5 py-1 rounded-md bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white transition-all flex items-center space-x-1"
+                      >
+                        <Terminal className="h-3 w-3 text-neutral-400" />
+                        <span>localhost:3000</span>
                       </button>
                     </div>
 
@@ -401,48 +417,36 @@ export default function Home() {
 
                   {/* Demo Information Banner */}
                   {demoNotice && (
-                    <div className="p-3.5 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 flex items-center space-x-2">
-                      <Sparkles className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 text-xs font-mono text-neutral-300 flex items-center space-x-2">
+                      <Sparkles className="h-4 w-4 text-neutral-300 shrink-0" />
                       <span>{demoNotice}</span>
                     </div>
                   )}
 
                   {/* Error Notification */}
                   {error && (
-                    <div className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-xs text-red-300 flex items-center space-x-2">
+                    <div className="p-3 rounded-xl bg-red-950/40 border border-red-500/30 text-xs text-red-300 flex items-center space-x-2">
                       <AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
                       <span>{error}</span>
                     </div>
                   )}
-
-                  {/* High-Contrast Action CTAs */}
-                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="w-full sm:flex-1 h-12 rounded-xl bg-white hover:bg-neutral-200 text-black font-semibold text-sm flex items-center justify-center space-x-2 shadow-lg shadow-white/5 transition-all disabled:opacity-50 active:scale-[0.98]"
-                    >
-                      <Shield className="h-4 w-4" />
-                      <span>Execute Security Assessment</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleDemoScan}
-                      disabled={loading}
-                      className="w-full sm:w-auto h-12 px-5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs font-semibold text-neutral-200 flex items-center justify-center space-x-2 transition-all shrink-0 active:scale-[0.98]"
-                    >
-                      <Terminal className="h-4 w-4 text-neutral-400" />
-                      <span>Simulated Target</span>
-                    </button>
-                  </div>
-
-                  {/* Clean Non-Blocking Disclaimer */}
-                  <p className="text-[11px] font-mono text-neutral-500 text-center pt-1 leading-relaxed">
-                    Zero-exploit passive inspection • Read-only HTTP surface evaluation aligned with OWASP ASVS v4.0
-                  </p>
                 </form>
+              </div>
+
+              {/* Capability Metrics Badges (Monochrome & Compact) */}
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-3">
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-neutral-300"></span>
+                  <span>98 Automated Defensive Heuristics</span>
+                </span>
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                  <Check className="h-3 w-3 text-neutral-300" />
+                  <span>In-Memory Zero-Storage Execution</span>
+                </span>
+                <span className="inline-flex items-center space-x-1.5 text-[11px] font-mono text-neutral-400 px-2.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.06]">
+                  <Shield className="h-3 w-3 text-neutral-300" />
+                  <span>OWASP ASVS v4.0 Aligned</span>
+                </span>
               </div>
             </div>
 

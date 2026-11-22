@@ -15,7 +15,7 @@ export default function Logo({ size = 'md', showText = true, className = '' }: L
   }[size];
 
   return (
-    <div className={`flex items-center space-x-3 group ${className}`}>
+    <div className={`flex items-center space-x-3 group cursor-pointer ${className}`}>
       {/* Direction 3 Custom Geometric Vault-Shield Tile */}
       <div className={`relative ${dimensions.box} rounded-xl bg-[#090A0E] p-[1px] border border-white/20 shadow-md shadow-black/90 group-hover:border-white/40 transition-all`}>
         <svg

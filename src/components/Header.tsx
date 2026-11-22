@@ -19,11 +19,28 @@ export default function Header() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const handleAuditorClick = () => {
+    if (pathname === '/') {
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('shipsafe:reset'));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } else {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('shipsafe_pending_reset', 'true');
+      }
+    }
+  };
+
   return (
     <header className="w-full border-b border-white/[0.08] bg-black/80 backdrop-blur-2xl sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Left: Brand Logo */}
-        <Link href="/" className="hover:opacity-90 transition-opacity shrink-0">
+        <Link 
+          href="/" 
+          onClick={handleAuditorClick}
+          className="hover:opacity-90 transition-opacity shrink-0 cursor-pointer"
+        >
           <Logo size="md" />
         </Link>
 
@@ -35,6 +52,7 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={item.href === '/' ? handleAuditorClick : undefined}
                 className={`relative px-3.5 py-1.5 rounded-lg text-xs font-mono transition-colors ${
                   isActive
                     ? 'text-black font-semibold'
@@ -90,7 +108,10 @@ export default function Header() {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => {
+                  if (item.href === '/') handleAuditorClick();
+                  setMobileMenuOpen(false);
+                }}
                 className={`block px-3 py-2 rounded-lg text-xs font-mono transition-all ${
                   isActive
                     ? 'bg-white text-black font-semibold'
