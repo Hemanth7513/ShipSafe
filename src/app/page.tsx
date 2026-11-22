@@ -17,10 +17,7 @@ import {
   Check,
   SearchCode,
   Globe,
-  Cpu,
-  Sparkles,
-  Bot,
-  FileCode
+  Sparkles
 } from 'lucide-react';
 
 interface RecentScan {
@@ -444,108 +441,6 @@ export default function Home() {
                   <Shield className="h-3 w-3 text-neutral-300" />
                   <span>OWASP ASVS v4.0 Aligned</span>
                 </span>
-              </div>
-            </div>
-
-            {/* The 4 Core Pillars - Clean, Punchy & Uncluttered */}
-            <div className="pt-4">
-              <div className="text-center mb-5 space-y-1">
-                <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-500">
-                  Focused Security Engine
-                </span>
-                <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight">
-                  The 4 Core Pillars of ShipSafe
-                </h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
-                {/* Pillar 1: BaaS & Secret Hunter */}
-                <Link
-                  href="/vulnerabilities"
-                  className="group rounded-xl border border-white/[0.08] bg-[#0A0C10] hover:border-white/20 p-4 transition-all space-y-2 flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="h-8 w-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <Cpu className="h-3.5 w-3.5" />
-                    </div>
-                    <h3 className="text-xs font-bold text-white">
-                      1. BaaS & Secret Hunter
-                    </h3>
-                    <p className="text-[11px] text-neutral-400 leading-relaxed">
-                      Decodes Supabase/Firebase JWTs in memory: permits safe public keys while catching dangerous admin bypasses.
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-1 text-[10px] font-mono text-neutral-500 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>Inspect Claims Lab</span>
-                    <ArrowRight className="h-2.5 w-2.5 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                </Link>
-
-                {/* Pillar 2: Build & Source Maps */}
-                <Link
-                  href="/vulnerabilities"
-                  className="group rounded-xl border border-white/[0.08] bg-[#0A0C10] hover:border-white/20 p-4 transition-all space-y-2 flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="h-8 w-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <FileCode className="h-3.5 w-3.5" />
-                    </div>
-                    <h3 className="text-xs font-bold text-white">
-                      2. Build & Source Maps
-                    </h3>
-                    <p className="text-[11px] text-neutral-400 leading-relaxed">
-                      Strips exposed unminified code. MIME validation blocks false alerts on SPA wildcard 200 OK routes.
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-1 text-[10px] font-mono text-neutral-500 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>Inspect Artifact Diffs</span>
-                    <ArrowRight className="h-2.5 w-2.5 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                </Link>
-
-                {/* Pillar 3: Headers & Cookie Hygiene */}
-                <Link
-                  href="/architecture"
-                  className="group rounded-xl border border-white/[0.08] bg-[#0A0C10] hover:border-white/20 p-4 transition-all space-y-2 flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="h-8 w-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <Shield className="h-3.5 w-3.5" />
-                    </div>
-                    <h3 className="text-xs font-bold text-white">
-                      3. Headers & Cookies
-                    </h3>
-                    <p className="text-[11px] text-neutral-400 leading-relaxed">
-                      Evaluates CSP, HSTS preload, X-Frame-Options clickjacking, and authentication cookie security flags.
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-1 text-[10px] font-mono text-neutral-500 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>View Security Specs</span>
-                    <ArrowRight className="h-2.5 w-2.5 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                </Link>
-
-                {/* Pillar 4: 1-Click AI Fix Prompts */}
-                <Link
-                  href="/vulnerabilities"
-                  className="group rounded-xl border border-white/[0.08] bg-[#0A0C10] hover:border-white/20 p-4 transition-all space-y-2 flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="h-8 w-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center text-white group-hover:scale-105 transition-transform">
-                      <Bot className="h-3.5 w-3.5" />
-                    </div>
-                    <h3 className="text-xs font-bold text-white">
-                      4. 1-Click AI Fix Prompts
-                    </h3>
-                    <p className="text-[11px] text-neutral-400 leading-relaxed">
-                      Instant, tailored remediation prompts for Next.js, Vite, or Remix to fix findings directly with AI agents.
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-1 text-[10px] font-mono text-neutral-500 group-hover:text-white pt-2 border-t border-white/[0.04]">
-                    <span>Preview AI Prompts</span>
-                    <ArrowRight className="h-2.5 w-2.5 group-hover:translate-x-0.5 transition-transform" />
-                  </div>
-                </Link>
               </div>
             </div>
           </motion.div>
