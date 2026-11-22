@@ -16,6 +16,7 @@ import {
   Terminal,
   Check,
   SearchCode,
+  Globe,
   Cpu,
   Sparkles,
   Bot,
@@ -325,29 +326,27 @@ export default function Home() {
                       <span className="text-[11px] text-neutral-500 hidden sm:inline">Public HTTPS or dev entrypoint</span>
                     </div>
 
-                    <div className="relative flex flex-col sm:flex-row gap-2">
-                      <div className="relative flex-1">
-                        <input
-                          ref={inputRef}
-                          type="text"
-                          value={url}
-                          onChange={(e) => setUrl(e.target.value)}
-                          placeholder="https://your-app.com or localhost:3000"
-                          className="w-full h-12 px-4 pr-16 rounded-xl bg-[#030406] border border-white/15 focus:border-white focus:ring-1 focus:ring-white/25 text-xs sm:text-sm text-white placeholder-neutral-500 transition-all font-mono outline-none shadow-inner"
-                        />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-neutral-500 bg-white/[0.04] border border-white/10 px-1.5 py-0.5 rounded pointer-events-none hidden sm:inline">
-                          /
-                        </span>
-                      </div>
-
+                    <div className="relative flex items-center h-13 w-full rounded-xl bg-[#030406] border border-white/20 p-1.5 pl-3.5 focus-within:border-white/50 focus-within:ring-1 focus-within:ring-white/20 transition-all shadow-inner">
+                      <Globe className="h-4 w-4 text-neutral-400 shrink-0 mr-2.5" />
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        placeholder="https://your-app.com or localhost:3000"
+                        className="flex-1 h-full bg-transparent text-xs sm:text-sm text-white placeholder-neutral-500 font-mono outline-none border-none pr-2"
+                      />
+                      <span className="hidden sm:inline-block text-[10px] font-mono text-neutral-500 bg-white/[0.04] border border-white/10 px-2 py-0.5 rounded mr-2 pointer-events-none shrink-0">
+                        /
+                      </span>
                       <button
                         type="submit"
                         disabled={loading}
-                        className="h-12 px-5 rounded-xl bg-white hover:bg-neutral-200 text-black font-semibold text-xs sm:text-sm flex items-center justify-center space-x-2 transition-all shadow-md active:scale-[0.98] shrink-0"
+                        className="h-full px-4 sm:px-5 rounded-lg bg-white hover:bg-neutral-200 text-black font-semibold text-xs sm:text-sm flex items-center space-x-1.5 transition-all shadow-md active:scale-[0.98] shrink-0"
                       >
-                        <Shield className="h-4 w-4" />
+                        <Shield className="h-3.5 w-3.5" />
                         <span>Audit Target</span>
-                        <ArrowRight className="h-4 w-4" />
+                        <ArrowRight className="h-3.5 w-3.5" />
                       </button>
                     </div>
                   </div>
