@@ -16,8 +16,8 @@ export default function Logo({ size = 'md', showText = true, className = '' }: L
 
   return (
     <div className={`flex items-center space-x-3 group cursor-pointer ${className}`}>
-      {/* Faceted Shield Tile with Subtle Indigo/Violet Glow */}
-      <div className={`relative ${dimensions.box} rounded-xl bg-[#090A14] p-[1px] border border-indigo-500/40 shadow-[0_0_15px_rgba(99,102,241,0.25)] group-hover:border-indigo-400 transition-all`}>
+      {/* Direction 3 Custom Geometric Vault-Shield Tile (Black Monolith Silver) */}
+      <div className={`relative ${dimensions.box} rounded-xl bg-[#090A0E] p-[1px] border border-white/20 shadow-md shadow-black/90 group-hover:border-white/40 transition-all`}>
         <svg
           viewBox="0 0 40 40"
           fill="none"
@@ -25,49 +25,49 @@ export default function Logo({ size = 'md', showText = true, className = '' }: L
           className="w-full h-full p-1.5 transform group-hover:scale-105 transition-transform duration-300"
         >
           <defs>
-            <linearGradient id="shieldGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#A5B4FC" />
-              <stop offset="100%" stopColor="#6366F1" />
+            <linearGradient id="facetWhiteGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" />
+              <stop offset="100%" stopColor="#71717A" />
             </linearGradient>
-            <linearGradient id="shieldGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#312E81" />
-              <stop offset="100%" stopColor="#818CF8" />
+            <linearGradient id="facetDarkGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#3F3F46" />
+              <stop offset="100%" stopColor="#A1A1AA" />
             </linearGradient>
           </defs>
 
           {/* Top North-West Facet */}
           <path
             d="M20 5L8 14L20 20L20 5Z"
-            fill="url(#shieldGrad1)"
+            fill="url(#facetWhiteGrad)"
           />
 
           {/* Top North-East Facet */}
           <path
             d="M20 5L32 14L20 20L20 5Z"
-            fill="#E0E7FF"
-            fillOpacity="0.9"
+            fill="#FFFFFF"
+            fillOpacity="0.85"
           />
 
           {/* Lower South-West Armor Wing */}
           <path
             d="M8 14L20 35L20 20L8 14Z"
-            fill="url(#shieldGrad2)"
+            fill="url(#facetDarkGrad)"
           />
 
           {/* Lower South-East Armor Wing */}
           <path
             d="M32 14L20 35L20 20L32 14Z"
-            fill="#818CF8"
-            fillOpacity="0.85"
+            fill="#A1A1AA"
+            fillOpacity="0.9"
           />
 
-          {/* Laser Line */}
+          {/* Precision Center Dividing Laser Line */}
           <line
             x1="20"
             y1="5"
             x2="20"
             y2="35"
-            stroke="#090A14"
+            stroke="#090A0E"
             strokeWidth="1.2"
           />
         </svg>
@@ -79,7 +79,7 @@ export default function Logo({ size = 'md', showText = true, className = '' }: L
           <span className={`font-bold tracking-tight text-white ${dimensions.text}`}>
             Ship<span className="text-neutral-400 font-semibold">Safe</span>
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-950/60 text-indigo-300 border border-indigo-500/40 uppercase tracking-wider shadow-[0_0_10px_rgba(99,102,241,0.2)]">
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-full bg-white/[0.06] text-neutral-400 border border-white/10 uppercase tracking-wider">
             AUDIT
           </span>
         </div>

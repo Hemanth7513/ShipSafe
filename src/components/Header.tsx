@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Menu, X, Shield } from 'lucide-react';
+import { Menu, X, Shield, Terminal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Logo from './Logo';
 
@@ -11,8 +11,8 @@ const NAV_ITEMS = [
   { href: '/', label: 'Auditor' },
   { href: '/vulnerabilities', label: 'Vulnerabilities' },
   { href: '/architecture', label: 'Architecture' },
-  { href: '/#protocol', label: 'Protocol' },
-  { href: '/#faq', label: 'FAQ' },
+  { href: '/protocol', label: 'Protocol' },
+  { href: '/faq', label: 'FAQ' },
 ];
 
 export default function Header() {
@@ -33,7 +33,7 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full border-b border-white/[0.08] bg-[#030407]/80 backdrop-blur-2xl sticky top-0 z-40">
+    <header className="w-full border-b border-white/[0.08] bg-black/85 backdrop-blur-2xl sticky top-0 z-40">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Left: Brand Logo */}
         <Link 
@@ -44,16 +44,16 @@ export default function Header() {
           <Logo size="md" />
         </Link>
 
-        {/* Center: Desktop Capsule Navigation Bar */}
-        <nav className="hidden md:flex items-center space-x-1 p-1 rounded-full bg-[#0A0D14]/90 border border-white/10 relative shadow-inner">
+        {/* Center: Desktop Navigation Bar with Spring Pill */}
+        <nav className="hidden md:flex items-center space-x-1 p-1 rounded-full bg-white/[0.03] border border-white/[0.08] relative">
           {NAV_ITEMS.map((item) => {
-            const isActive = pathname === item.href && item.href !== '/#protocol' && item.href !== '/#faq';
+            const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={item.href === '/' ? handleAuditorClick : undefined}
-                className={`relative px-4 py-1.5 rounded-full text-xs font-mono transition-colors ${
+                className={`relative px-3.5 py-1.5 rounded-full text-xs font-mono transition-colors ${
                   isActive
                     ? 'text-black font-semibold'
                     : 'text-neutral-400 hover:text-white'
@@ -72,19 +72,19 @@ export default function Header() {
           })}
         </nav>
 
-        {/* Right: Auditor Active & Sandbox */}
+        {/* Right Status & Sandbox */}
         <div className="flex items-center space-x-2 sm:space-x-3">
-          <div className="hidden lg:flex items-center space-x-2 text-xs font-mono px-3.5 py-1.5 rounded-full bg-[#05130E] border border-emerald-500/30 text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15)]">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <div className="hidden lg:flex items-center space-x-2 text-xs font-mono px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-neutral-400">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
             <span>Auditor: Active</span>
           </div>
 
           <Link
             href="/demo-target"
-            className="flex items-center space-x-1.5 text-xs font-mono text-neutral-300 hover:text-white px-3.5 py-1.5 rounded-xl border border-white/10 bg-white/[0.03] hover:bg-white/[0.08] transition-all shadow-sm"
+            className="flex items-center space-x-1.5 text-xs font-mono text-neutral-300 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 hover:bg-white/[0.06] transition-all"
           >
-            <span className="text-neutral-400 font-mono text-xs">&gt;_</span>
-            <span>Sandbox</span>
+            <Terminal className="h-3.5 w-3.5 text-neutral-400" />
+            <span className="hidden sm:inline">Sandbox</span>
           </Link>
 
           {/* Mobile Menu Toggle Button */}
@@ -101,7 +101,7 @@ export default function Header() {
 
       {/* Mobile Dropdown Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-white/[0.08] bg-[#07090E]/95 backdrop-blur-2xl px-4 py-3 space-y-1 animate-fadeIn">
+        <div className="md:hidden border-b border-white/[0.08] bg-[#0B0D11]/95 backdrop-blur-2xl px-4 py-3 space-y-1 animate-fadeIn">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
